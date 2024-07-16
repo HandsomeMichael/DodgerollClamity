@@ -8,5 +8,10 @@ Configs: {
 			Label: Enable Dodgeroll
 			Tooltip: ""
 		}
+
+		InvulnerableRatio: {
+			Label: Invulnerable Ratio
+			Tooltip: ""
+		}
 	}
 }

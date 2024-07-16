@@ -11,5 +11,9 @@ namespace Dodgeroll
 
         [DefaultValue(true)]
         public bool EnableDodgeroll { get; set; }
+
+        [Slider]
+        [DefaultValue(0.75F)]
+        public float InvulnerableRatio { get; set; }
     }
 }
