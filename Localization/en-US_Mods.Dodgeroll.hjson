@@ -1,0 +1,12 @@
+Keybinds.Dodgeroll.DisplayName: Dodgeroll
+
+Configs: {
+	DodgerollConfig: {
+		DisplayName: Dodgeroll Config
+
+		EnableDodgeroll: {
+			Label: Enable Dodgeroll
+			Tooltip: ""
+		}
+	}
+}
