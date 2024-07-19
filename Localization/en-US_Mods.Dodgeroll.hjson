@@ -13,5 +13,27 @@ Configs: {
 			Label: Invulnerable Ratio
 			Tooltip: ""
 		}
+
+		EnableStamina: {
+			Label: Enable Stamina
+			Tooltip: ""
+		}
+
+		StaminaUsage: {
+			Label: Stamina Usage
+			Tooltip: ""
+		}
+
+		StaminaRegenRate: {
+			Label: Stamina Regen Rate
+			Tooltip: ""
+		}
+
+		StaminaCooldown: {
+			Label: Stamina Cooldown
+			Tooltip: ""
+		}
+
+		Headers.Stamina: Stamina Header
 	}
 }
