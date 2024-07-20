@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Dodgeroll.UI;
 using Terraria.ModLoader.Config;
 
 namespace Dodgeroll
@@ -13,7 +14,31 @@ namespace Dodgeroll
         public bool EnableDodgeroll { get; set; }
 
         [Slider]
-        [DefaultValue(0.75F)]
+        [DefaultValue(0.75)]
         public float InvulnerableRatio { get; set; }
+
+        [Header("Stamina")]
+
+        [DefaultValue(true)]
+        public bool EnableStamina { get; set; }
+
+        [Slider]
+        [DefaultValue(0.2)]
+        public float StaminaUsage { get; set; }
+
+        [Slider]
+        [DefaultValue(0.5)]
+        public float StaminaRegenRate { get; set; }
+
+        [Slider]
+        [DefaultValue(1)]
+        public float StaminaCooldown { get; set; }
+
+        [DefaultValue(DodgerollMeterPosition.TOP)]
+        public DodgerollMeterPosition StaminaPosition { get; set; }
+
+        [Slider]
+        [DefaultValue(15)]
+        public int StaminaPositionOffset { get; set; }
     }
 }

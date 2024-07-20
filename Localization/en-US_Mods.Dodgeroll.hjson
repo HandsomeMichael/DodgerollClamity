@@ -13,5 +13,45 @@ Configs: {
 			Label: Invulnerable Ratio
 			Tooltip: ""
 		}
+
+		Headers.Stamina: Stamina
+
+		EnableStamina: {
+			Label: Enable Stamina
+			Tooltip: ""
+		}
+
+		StaminaUsage: {
+			Label: Stamina Usage
+			Tooltip: ""
+		}
+
+		StaminaRegenRate: {
+			Label: Stamina Regen Rate
+			Tooltip: ""
+		}
+
+		StaminaCooldown: {
+			Label: Stamina Cooldown
+			Tooltip: ""
+		}
+
+		StaminaPosition: {
+			Label: Stamina Position
+			Tooltip: ""
+		}
+
+		StaminaPositionOffset: {
+			Label: Stamina Position Offset
+			Tooltip: ""
+		}
+	}
+
+	DodgerollMeterPosition: {
+		Tooltip: ""
+		TOP.Label: TOP
+		BOTTOM.Label: BOTTOM
+		LEFT.Label: LEFT
+		RIGHT.Label: RIGHT
 	}
 }
