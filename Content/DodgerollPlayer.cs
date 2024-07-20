@@ -1,12 +1,11 @@
 using System;
-using Dodgeroll;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.GameInput;
 using Terraria.ModLoader;
 
-namespace DodgeRoll.Content
+namespace Dodgeroll.Content
 {
     public class DodgerollPlayer : ModPlayer
     {

@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Dodgeroll.UI;
 using Terraria.ModLoader.Config;
 
 namespace Dodgeroll
@@ -32,5 +33,12 @@ namespace Dodgeroll
         [Slider]
         [DefaultValue(1)]
         public float StaminaCooldown { get; set; }
+
+        [DefaultValue(DodgerollMeterPosition.TOP)]
+        public DodgerollMeterPosition StaminaPosition { get; set; }
+
+        [Slider]
+        [DefaultValue(15)]
+        public int StaminaPositionOffset { get; set; }
     }
 }

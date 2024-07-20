@@ -14,6 +14,8 @@ Configs: {
 			Tooltip: ""
 		}
 
+		Headers.Stamina: Stamina
+
 		EnableStamina: {
 			Label: Enable Stamina
 			Tooltip: ""
@@ -34,6 +36,22 @@ Configs: {
 			Tooltip: ""
 		}
 
-		Headers.Stamina: Stamina Header
+		StaminaPosition: {
+			Label: Stamina Position
+			Tooltip: ""
+		}
+
+		StaminaPositionOffset: {
+			Label: Stamina Position Offset
+			Tooltip: ""
+		}
+	}
+
+	DodgerollMeterPosition: {
+		Tooltip: ""
+		TOP.Label: TOP
+		BOTTOM.Label: BOTTOM
+		LEFT.Label: LEFT
+		RIGHT.Label: RIGHT
 	}
 }

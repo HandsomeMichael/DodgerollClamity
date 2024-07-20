@@ -2,7 +2,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.UI;
 using Terraria;
-using DodgeRoll.Content;
+using Dodgeroll.Content;
+using System;
 
 namespace Dodgeroll.UI
 {
@@ -10,13 +11,7 @@ namespace Dodgeroll.UI
     {
         static readonly int side = 6;
         static readonly int largerSide = side * 5;
-        static readonly int offset = 8;
-
-        static readonly Rectangle barRectangle = new(0, 0, side * 5 + offset, side + offset);
-        static readonly Rectangle staminaRectangle = new(0, 0, side * 5, side);
-        static readonly Vector2 toCenterOffset = new(barRectangle.Width / 2, barRectangle.Height / 2);
-        static readonly Vector2 toCenterStaminaOffset = new(offset / 2, offset / 2);
-
+        static readonly int padding = 8;
         readonly int fadingLength = 60;
 
         Player player;
@@ -40,14 +35,64 @@ namespace Dodgeroll.UI
             staminaTexture.SetData(new Color[] { staminaColor });
 
             var progress = dodgeroll.Stamina / dodgeroll.MaxStamina;
-            var currentStaminaRectangle = new Rectangle(0, 0, (int)(staminaRectangle.Width * progress), staminaRectangle.Height);
+            var width = 0;
+            var height = 0;
+            var staminaWidth = 0;
+            var staminaHeight = 0;
 
-            var position = (player.Center - Main.screenPosition) / Main.UIScale - new Vector2(0, player.height / 2f + 15);
+            switch (DodgerollConfig.Instance.StaminaPosition)
+            {
+                case DodgerollMeterPosition.TOP:
+                case DodgerollMeterPosition.BOTTOM:
+                    width = largerSide;
+                    height = side;
+                    staminaWidth = (int)(width * progress);
+                    staminaHeight = height;
+                    break;
+                case DodgerollMeterPosition.LEFT:
+                case DodgerollMeterPosition.RIGHT:
+                    width = side;
+                    height = largerSide;
+                    staminaWidth = width;
+                    staminaHeight = (int)(height * progress);
+                    break;
+            }
+
+            var barRectangle = new Rectangle(0, 0, width + padding, height + padding);
+            var staminaRectangle = new Rectangle(0, 0, staminaWidth, staminaHeight);
+
+            var toCenterOffset = new Vector2(barRectangle.Width / 2, barRectangle.Height / 2);
+
+            var anchorPosition = DodgerollConfig.Instance.StaminaPosition switch
+            {
+                DodgerollMeterPosition.TOP => player.Top,
+                DodgerollMeterPosition.BOTTOM => player.Bottom,
+                DodgerollMeterPosition.LEFT => player.Left,
+                DodgerollMeterPosition.RIGHT => player.Right,
+                _ => throw new NotImplementedException(),
+            };
+
+            var offset = DodgerollConfig.Instance.StaminaPosition switch
+            {
+                DodgerollMeterPosition.TOP => new Vector2(0, DodgerollConfig.Instance.StaminaPositionOffset),
+                DodgerollMeterPosition.BOTTOM => new Vector2(0, -DodgerollConfig.Instance.StaminaPositionOffset),
+                DodgerollMeterPosition.LEFT => new Vector2(DodgerollConfig.Instance.StaminaPositionOffset, 0),
+                DodgerollMeterPosition.RIGHT => new Vector2(-DodgerollConfig.Instance.StaminaPositionOffset, 0),
+                _ => throw new NotImplementedException(),
+            };
+
+            var toCenterStaminaOffset = new Vector2(padding / 2, padding / 2);
+            if (DodgerollConfig.Instance.StaminaPosition == DodgerollMeterPosition.LEFT || DodgerollConfig.Instance.StaminaPosition == DodgerollMeterPosition.RIGHT)
+            {
+                toCenterStaminaOffset.Y += height - staminaHeight;
+            }
+
+            var position = (anchorPosition - Main.screenPosition) / Main.UIScale - offset;
             var barPosition = position - toCenterOffset;
             var staminaPosition = position + toCenterStaminaOffset - toCenterOffset;
 
             spriteBatch.Draw(barTexture, barPosition, barRectangle, barColor);
-            spriteBatch.Draw(staminaTexture, staminaPosition, currentStaminaRectangle, staminaColor);
+            spriteBatch.Draw(staminaTexture, staminaPosition, staminaRectangle, staminaColor);
         }
 
         public override void Update(GameTime gameTime)
