@@ -1,5 +1,9 @@
-[h3] Added [/h3]
+[h3] Changed [/h3]
 [list]
-    [*] Stamina mechanic, which can be toggled on/off.
-    [*] Configurable options related to stamina, like it's regeneration rate, how much is used on dodge, etc.
+    [*] Dodgerolls are now based on player's input instead of currently facing direction.
+    [*] Dodgerolls are now 8-directional.
+    [*] Dodgerolls now removes hooks.
+    [*] Adds configurable options for dodgeroll length and speed boost.
+    [*] Disables item use midroll (configurable).
+    [*] Disables dodgerolls when mounted.
 [/list]
