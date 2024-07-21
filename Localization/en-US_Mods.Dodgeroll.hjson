@@ -14,6 +14,16 @@ Configs: {
 			Tooltip: ""
 		}
 
+		DodgerollLength: {
+			Label: Dodgeroll Length
+			Tooltip: ""
+		}
+
+		DodgerollBoost: {
+			Label: Dodgeroll Boost
+			Tooltip: ""
+		}
+
 		Headers.Stamina: Stamina
 
 		EnableStamina: {

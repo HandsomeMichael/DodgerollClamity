@@ -9,9 +9,9 @@ namespace Dodgeroll.Content
 {
     public class DodgerollPlayer : ModPlayer
     {
-        private readonly int dodgerollLength = 20;
-
         private DodgerollState state = DodgerollState.NONE;
+        private Vector2 boost = Vector2.Zero;
+        private int direction = 1;
         private int dodgerollTimer = 0;
         private int invulnerableTimer = 0;
         private int staminaTimer = 0;
@@ -31,7 +31,8 @@ namespace Dodgeroll.Content
             var isDodgerollAvailable = DodgerollConfig.Instance.EnableDodgeroll &&
                 (DodgerollKey?.JustPressed ?? false) &&
                 state == DodgerollState.NONE &&
-                Stamina >= DodgerollConfig.Instance.StaminaUsage;
+                Stamina >= DodgerollConfig.Instance.StaminaUsage &&
+                !Player.mount.Active;
             if (isDodgerollAvailable)
             {
                 state = DodgerollState.STARTED;
@@ -39,8 +40,12 @@ namespace Dodgeroll.Content
                 var staminaCost = DodgerollConfig.Instance.EnableStamina ? DodgerollConfig.Instance.StaminaUsage : 0;
                 Stamina = Math.Max(0, Stamina - staminaCost);
 
-                dodgerollTimer = dodgerollLength;
-                invulnerableTimer = (int)(dodgerollLength * DodgerollConfig.Instance.InvulnerableRatio);
+                var defaultDirection = new Vector2(Player.direction, 0);
+                boost = triggersSet.DirectionsRaw.SafeNormalize(defaultDirection) * DodgerollConfig.Instance.DodgerollBoost;
+                direction = triggersSet.DirectionsRaw.X == 0 ? Player.direction : (int)triggersSet.DirectionsRaw.X;
+
+                dodgerollTimer = DodgerollConfig.Instance.DodgerollLength;
+                invulnerableTimer = (int)(DodgerollConfig.Instance.DodgerollLength * DodgerollConfig.Instance.InvulnerableRatio);
             }
 
             base.ProcessTriggers(triggersSet);
@@ -52,7 +57,8 @@ namespace Dodgeroll.Content
             {
                 state = DodgerollState.ROLLING;
 
-                Player.velocity += new Vector2(Player.direction * 5, 0);
+                Player.RemoveAllGrapplingHooks();
+                Player.velocity += boost;
                 Player.immune = true;
                 Player.immuneTime = invulnerableTimer;
             }
@@ -65,6 +71,7 @@ namespace Dodgeroll.Content
             if (state == DodgerollState.FINISHED)
             {
                 state = DodgerollState.NONE;
+
                 staminaTimer = (int)(DodgerollConfig.Instance.StaminaCooldown * 60);
             }
 
@@ -87,10 +94,11 @@ namespace Dodgeroll.Content
         {
             if (state == DodgerollState.ROLLING)
             {
-                var progress = 1 - dodgerollTimer / (float)dodgerollLength;
+                var progress = 1 - dodgerollTimer / (float)DodgerollConfig.Instance.DodgerollLength;
 
+                Player.direction = direction;
                 Player.fullRotationOrigin = Player.Center - Player.position;
-                Player.fullRotation = Player.direction * MathHelper.Lerp(0, MathHelper.TwoPi, progress);
+                Player.fullRotation = direction * MathHelper.Lerp(0, MathHelper.TwoPi, progress);
             }
 
             base.PostUpdate();

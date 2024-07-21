@@ -17,6 +17,14 @@ namespace Dodgeroll
         [DefaultValue(0.75)]
         public float InvulnerableRatio { get; set; }
 
+        [Slider]
+        [DefaultValue(30)]
+        public int DodgerollLength { get; set; }
+
+        [Slider]
+        [DefaultValue(7)]
+        public int DodgerollBoost { get; set; }
+
         [Header("Stamina")]
 
         [DefaultValue(true)]
