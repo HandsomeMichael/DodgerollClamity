@@ -25,6 +25,9 @@ namespace Dodgeroll
         [DefaultValue(7)]
         public int DodgerollBoost { get; set; }
 
+        [DefaultValue(false)]
+        public bool EnableItemUseMidroll { get; set; }
+
         [Header("Stamina")]
 
         [DefaultValue(true)]

@@ -26,6 +26,16 @@ namespace Dodgeroll.Content
             DodgerollKey = KeybindLoader.RegisterKeybind(Mod, "Dodgeroll", Keys.LeftControl);
         }
 
+        public override bool CanUseItem(Item item)
+        {
+            if (!DodgerollConfig.Instance.EnableItemUseMidroll)
+            {
+                return state == DodgerollState.NONE || state == DodgerollState.FINISHED;
+            }
+
+            return base.CanUseItem(item);
+        }
+
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
             var isDodgerollAvailable = DodgerollConfig.Instance.EnableDodgeroll &&

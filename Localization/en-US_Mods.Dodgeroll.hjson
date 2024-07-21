@@ -55,6 +55,11 @@ Configs: {
 			Label: Stamina Position Offset
 			Tooltip: ""
 		}
+
+		EnableItemUseMidroll: {
+			Label: Enable Item Use Midroll
+			Tooltip: ""
+		}
 	}
 
 	DodgerollMeterPosition: {
