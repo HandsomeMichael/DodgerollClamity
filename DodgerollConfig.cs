@@ -18,7 +18,7 @@ namespace Dodgeroll
         public float InvulnerableRatio { get; set; }
 
         [Slider]
-        [DefaultValue(30)]
+        [DefaultValue(25)]
         public int DodgerollLength { get; set; }
 
         [Slider]
@@ -42,6 +42,7 @@ namespace Dodgeroll
         public float StaminaRegenRate { get; set; }
 
         [Slider]
+        [Range(0f, 10f)]
         [DefaultValue(1)]
         public float StaminaCooldown { get; set; }
 
