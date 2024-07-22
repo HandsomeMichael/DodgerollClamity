@@ -34,7 +34,7 @@ namespace Dodgeroll.UI
 
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
         {
-            int index = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
+            var index = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
             if (index != -1)
             {
                 layers.Insert(index, new LegacyGameInterfaceLayer(
