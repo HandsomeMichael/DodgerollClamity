@@ -1,7 +1,7 @@
 # Dodgeroll
 
 <p align="center">
-  ![Dodgeroll mod icon.](icon.png)
+  <img src="icon.png" alt="Dodgeroll mod icon"/>
 </p>
 
 A Terraria mod that seeks to add a highly configurable dodgeroll to serve all your i-frame dodging needs. This is probably unbalanced when playing with other mods / base Terraria content, so configure it to be as broken or as balanced as you want it to be (the base configuration is what I personally enjoy using).
