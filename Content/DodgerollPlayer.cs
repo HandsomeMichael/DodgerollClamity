@@ -7,14 +7,14 @@ using Terraria.ModLoader;
 
 namespace Dodgeroll.Content
 {
-    public class DodgerollPlayer : ModPlayer
+    class DodgerollPlayer : ModPlayer
     {
-        private DodgerollState state = DodgerollState.NONE;
-        private Vector2 boost = Vector2.Zero;
-        private int direction = 1;
-        private int dodgerollTimer = 0;
-        private int invulnerableTimer = 0;
-        private int staminaTimer = 0;
+        DodgerollState state = DodgerollState.NONE;
+        Vector2 boost = Vector2.Zero;
+        int direction = 1;
+        int dodgerollTimer = 0;
+        int invulnerableTimer = 0;
+        int staminaTimer = 0;
 
         public float Stamina { get; set; } = 1;
         public float MaxStamina { get; } = 1;

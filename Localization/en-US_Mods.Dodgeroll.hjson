@@ -11,17 +11,25 @@ Configs: {
 
 		InvulnerableRatio: {
 			Label: Invulnerable Ratio
-			Tooltip: ""
+			Tooltip:
+				'''
+				How much of the dodgeroll will have i-frames.
+				Example: 0.75 means the first 75% of the dodgeroll animation will have i-frames (that is, you can get hit and lose life at the end of the animation).
+				'''
 		}
 
 		DodgerollLength: {
 			Label: Dodgeroll Length
-			Tooltip: ""
+			Tooltip:
+				'''
+				How many frames the dodgeroll will take.
+				Smaller values means the dodgeroll will happen and end faster.
+				'''
 		}
 
 		DodgerollBoost: {
 			Label: Dodgeroll Boost
-			Tooltip: ""
+			Tooltip: How much speed you will gain on dodgeroll start.
 		}
 
 		Headers.Stamina: Stamina
@@ -33,40 +41,44 @@ Configs: {
 
 		StaminaUsage: {
 			Label: Stamina Usage
-			Tooltip: ""
+			Tooltip:
+				'''
+				How much stamina percentage will be used to dodgeroll.
+				Example: 0.2 means 20% of the stamina will be used to dodgeroll, effectively giving you 5 dodgerolls before having to regenerate stamina.
+				'''
 		}
 
 		StaminaRegenRate: {
-			Label: Stamina Regen Rate
-			Tooltip: ""
+			Label: Stamina Regeneration Rate
+			Tooltip: How much stamina percentage will recover per second.
 		}
 
 		StaminaCooldown: {
 			Label: Stamina Cooldown
-			Tooltip: ""
+			Tooltip: How many seconds it will take to start recovering stamina after finishing dodgerolling.
 		}
 
 		StaminaPosition: {
 			Label: Stamina Position
-			Tooltip: ""
+			Tooltip: Where to show the stamina bar, relative to the player's position.
 		}
 
 		StaminaPositionOffset: {
 			Label: Stamina Position Offset
-			Tooltip: ""
+			Tooltip: The distance, in pixels, between the stamina bar and the player.
 		}
 
 		EnableItemUseMidroll: {
 			Label: Enable Item Use Midroll
-			Tooltip: ""
+			Tooltip: When activated, you can use attacks / hooks / magic while in the dodgerolling animation.
 		}
 	}
 
 	DodgerollMeterPosition: {
 		Tooltip: ""
-		TOP.Label: TOP
-		BOTTOM.Label: BOTTOM
-		LEFT.Label: LEFT
-		RIGHT.Label: RIGHT
+		TOP.Label: Top
+		BOTTOM.Label: Bottom
+		LEFT.Label: Left
+		RIGHT.Label: Right
 	}
 }
