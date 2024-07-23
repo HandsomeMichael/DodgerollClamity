@@ -1,4 +1,4 @@
-[h3] Added [/h3]
+[h3] Changed [/h3]
 [list]
-    [*] Configurable options tooltips and overall mod description / icon for public release.
+    [*] Optimized stamina bar RAM usage.
 [/list]

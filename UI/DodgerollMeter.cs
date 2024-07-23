@@ -16,14 +16,16 @@ namespace Dodgeroll.UI
 
         Player player;
         DodgerollPlayer dodgeroll;
+        Texture2D barTexture;
+        Texture2D staminaTexture;
         int fadingTimer = 0;
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             if (player == null || dodgeroll == null) return;
 
-            var barTexture = new Texture2D(Main.graphics.GraphicsDevice, 1, 1);
-            var staminaTexture = new Texture2D(Main.graphics.GraphicsDevice, 1, 1);
+            barTexture ??= new Texture2D(Main.graphics.GraphicsDevice, 1, 1);
+            staminaTexture ??= new Texture2D(Main.graphics.GraphicsDevice, 1, 1);
 
             var opacity = fadingTimer / (float)fadingLength;
             var opacityColor = new Color(opacity, opacity, opacity, opacity);
