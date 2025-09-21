@@ -1,4 +1,4 @@
-namespace Dodgeroll.Content
+namespace DodgerollClamity.Content
 {
     enum DodgerollState
     {

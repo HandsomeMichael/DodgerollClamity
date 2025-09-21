@@ -1,8 +1,8 @@
 using System.ComponentModel;
-using Dodgeroll.UI;
+using DodgerollClamity.UI;
 using Terraria.ModLoader.Config;
 
-namespace Dodgeroll
+namespace DodgerollClamity
 {
     public class DodgerollConfig : ModConfig
     {
@@ -13,9 +13,11 @@ namespace Dodgeroll
         [DefaultValue(true)]
         public bool EnableDodgeroll { get; set; }
 
-        [Slider]
-        [DefaultValue(0.75)]
-        public float InvulnerableRatio { get; set; }
+        // will always be fully invulnerable
+        
+        // [Slider]
+        // [DefaultValue(1f)]
+        // public float InvulnerableRatio { get; set; }
 
         [Slider]
         [DefaultValue(25)]
@@ -25,16 +27,27 @@ namespace Dodgeroll
         [DefaultValue(7)]
         public int DodgerollBoost { get; set; }
 
-        [DefaultValue(false)]
+        [DefaultValue(true)]
         public bool EnableItemUseMidroll { get; set; }
+
+        [DefaultValue(true)]
+        public bool CancelItemUseMidroll { get; set; }
+
+        [DefaultValue(false)]
+        public bool PerfectRollTriggerHurtEffect { get; set; }
+
+        [DefaultValue(false)]
+        public bool BonusOnDodgeNonsense { get; set; }
 
         [Header("Stamina")]
 
-        [DefaultValue(true)]
-        public bool EnableStamina { get; set; }
+        // will always be enabled
+        
+        // [DefaultValue(true)]
+        // public bool EnableStamina { get; set; }
 
         [Slider]
-        [DefaultValue(0.2)]
+        [DefaultValue(0.5)]
         public float StaminaUsage { get; set; }
 
         [Slider]

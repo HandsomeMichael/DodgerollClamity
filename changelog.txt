@@ -1,4 +1,0 @@
-[h3] Changed [/h3]
-[list]
-    [*] Optimized stamina bar RAM usage.
-[/list]

@@ -1,0 +1,104 @@
+Keybinds.Dodgeroll.DisplayName: Dodgeroll
+
+Configs: {
+	DodgerollConfig: {
+		DisplayName: Dodgeroll Config
+
+		EnableDodgeroll: {
+			Label: Enable Dodgeroll
+			Tooltip: ""
+		}
+
+		DodgerollLength: {
+			Label: Dodgeroll Length
+			Tooltip: ""
+		}
+
+		DodgerollBoost: {
+			Label: Dodgeroll Boost
+			Tooltip: ""
+		}
+
+		EnableItemUseMidroll: {
+			Label: Enable Item Use Midroll
+			Tooltip: ""
+		}
+
+		Headers.Stamina: Stamina Header
+
+		StaminaUsage: {
+			Label: Stamina Usage
+			Tooltip: ""
+		}
+
+		StaminaRegenRate: {
+			Label: Stamina Regen Rate
+			Tooltip: ""
+		}
+
+		StaminaCooldown: {
+			Label: Stamina Cooldown
+			Tooltip: ""
+		}
+
+		StaminaPosition: {
+			Label: Stamina Position
+			Tooltip: ""
+		}
+
+		StaminaPositionOffset: {
+			Label: Stamina Position Offset
+			Tooltip: ""
+		}
+
+		CancelItemUseMidroll: {
+			Label: Cancel Item Use Midroll
+			Tooltip: ""
+		}
+
+		PerfectRollTriggerHurtEffect: {
+			Label: Perfect Roll Trigger Hurt Effect
+			Tooltip: ""
+		}
+	}
+
+	DodgerollMeterPosition: {
+		Tooltip: ""
+		TOP.Label: T O P
+		BOTTOM.Label: B O T T O M
+		LEFT.Label: L E F T
+		RIGHT.Label: R I G H T
+	}
+}
+
+Buffs: {
+	BuffFamilius: {
+		DisplayName: Buff Familius
+		Description: Mods.DodgerollClamity.Buffs.BuffFamilius.Description
+	}
+
+	BuffHawked: {
+		DisplayName: Buff Hawked
+		Description: Mods.DodgerollClamity.Buffs.BuffHawked.Description
+	}
+
+	BuffMagical: {
+		DisplayName: Buff Magical
+		Description: Mods.DodgerollClamity.Buffs.BuffMagical.Description
+	}
+
+	BuffPrecise: {
+		DisplayName: Buff Precise
+		Description: Mods.DodgerollClamity.Buffs.BuffPrecise.Description
+	}
+
+	BuffRaged: {
+		DisplayName: Buff Raged
+		Description: Mods.DodgerollClamity.Buffs.BuffRaged.Description
+	}
+
+	BuffStealthy: {
+		DisplayName: Buff Stealthy
+		Description: Mods.DodgerollClamity.Buffs.BuffStealthy.Description
+	}
+}

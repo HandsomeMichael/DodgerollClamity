@@ -1,0 +1,21 @@
+things i wanna do :
+
+-- ui redesign
+-- succesfully dodging attack grant buff based on held weapon
+-- dodging while in infinite adrenaline stamina will only trigger life regen bonus
+>> grant full stealth on rogue 
+>> grant increased attack speed on ranged
+>> grant mana regen and damage increase on magic
+>> grant defense and movement speed on summoner
+>> grant strength on melee or other typeless weapon
+>> grant life regen if player in a critical condition
+>>>> grant fast reload if CalamityOverhaul is enabled on guns otherwise regular ranged (cant due to i really dont understand this chineese documentation dawg)
+
+-- dodgeroll multiplayer fix
+
+- rage increases dodgeroll stamina regen
+- adrenaline grants infinite stamina but right after dodging you take 5% more damage for 3 seconds
+
+- dodgeroll accesories :
+> increase dodgeroll length
+> increase dodgeroll stamina regen

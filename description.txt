@@ -1,12 +1,24 @@
-A Terraria mod that seeks to add a highly configurable dodgeroll to serve all your i-frame dodging needs. This is probably unbalanced when playing with other mods / base Terraria content, so configure it to be as broken or as balanced as you want it to be (the base configuration is what I personally enjoy using).
 
-This is my first mod for Terraria, so expect some bugs and unintended behaviors while using it. You're welcome to report those to me at the Issues tab or at the Steam Workshop page (though it may take some time for me to get into them).
+Jonasue's Dodgeroll Mod but now with calamity stuff
 
-Features:
-- Dodgerolls speed boosts are added to your current momentum, so you can do some movements like dodgerolling while grappling downwards to get some horizontal movement boost.
-- Dodgerolls are 8-directional, so you can dodge upwards, downwards (in place), or even diagonally. Do note that because it's based on current momentum, for example, you get more speed boost out of dodging upwards while ascending than while descending.
-- Adds a stamina mechanic so that you cannot just span dodgeroll infinitely, with some configurable options (like how much stamina it costs, how much it regenerates per second, its stamina regeneration cooldown, etc).
-- Some configurable aspects to the dodgeroll, like how many frames it will last, the amount of speed gained or how many i-frames to have while dodging.
+Original Mod by Jonasue, go see the original mod if you want a lightweight , balanced and more configurable dodgeroll.
+Im too lazy to patch the mod so i just fork it.
+
+You can use the mod without calamity, althought some feature is disabled.
+
+Changes :
+
+- Dodging grant bonuses depending on held weapon and timing
+- Some accesories grant more dodging bonuses or dodging capability
+- Some higher being attacks will be undodgeable / require accesories
+- Adrenaline & Rage grant stat increase on dodgeroll
+- Rolling depletes most fire based debuff faster
+- Rolling halfs fall damage, perfect roll will leave you to atleat 1hp
+- Now should work with multiplayer
+- Dodge sound effects ig
+- Removed some configs
 
 Credits:
-This mod was influenced by TerrariaOverhaul and DodgeMod, while trying to do my own takes on the dodgeroll implementation.
+ 
+Original mod (MIT Licensed) : https://github.com/JonasueDaze/Dodgeroll
+Mod was influenced by TerrariaOverhaul and DodgeMod, while trying to do my own takes on the dodgeroll implementation.

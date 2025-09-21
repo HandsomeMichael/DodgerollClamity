@@ -4,7 +4,7 @@ using Terraria;
 using Terraria.ModLoader;
 using Terraria.UI;
 
-namespace Dodgeroll.UI
+namespace DodgerollClamity.UI
 {
     [Autoload(Side = ModSide.Client)]
     class DodgerollMeterUISystem : ModSystem

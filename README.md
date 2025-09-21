@@ -4,9 +4,9 @@
   <img src="icon.png" alt="Dodgeroll mod icon"/>
 </p>
 
-A Terraria mod that seeks to add a highly configurable dodgeroll to serve all your i-frame dodging needs. This is probably unbalanced when playing with other mods / base Terraria content, so configure it to be as broken or as balanced as you want it to be (the base configuration is what I personally enjoy using).
+Forked from Dodgeroll mod
 
-This is my first mod for Terraria, so expect some bugs and unintended behaviors while using it. You're welcome to report those to me at the [Issues](https://github.com/JonasueDaze/Dodgeroll/issues) tab or at the Steam Workshop page (though it may take some time for me to get into them).
+A Terraria mod that seeks to add a highly configurable dodgeroll to serve all your i-frame dodging needs. This is probably unbalanced when playing with other mods / base Terraria content, so configure it to be as broken or as balanced as you want it to be (the base configuration is what I personally enjoy using).
 
 ## Features
 
@@ -17,4 +17,4 @@ This is my first mod for Terraria, so expect some bugs and unintended behaviors 
 
 ## Credits
 
-This mod was influenced by [TerrariaOverhaul](https://github.com/Mirsario/TerrariaOverhaul) and [DodgeMod](https://github.com/Antinoe/DodgeMod), while trying to do my own takes on the dodgeroll implementation.
+The original dodgeroll mod was influenced by [TerrariaOverhaul](https://github.com/Mirsario/TerrariaOverhaul) and [DodgeMod](https://github.com/Antinoe/DodgeMod), while trying to do my own takes on the dodgeroll implementation.

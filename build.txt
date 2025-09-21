@@ -1,4 +1,9 @@
-displayName = Dodgeroll
-author = Jonasue
-version = 0.2.3
-homepage = https://github.com/JonasueDaze/Dodgeroll
+displayName = Dodgeroll : Calamity
+author = Lasthue or Neko the catnt
+version = 0.1
+weakReferences = CalamityMod
+sortAfter = CalamityMod , ParryBlockEtc
+hideCode = false
+hideResources = false
+includeSource = true
+buildIgnore = *.csproj, *.user, obj\*, bin\*, .vs\*, Old\*, *csbak
