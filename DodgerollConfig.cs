@@ -14,7 +14,7 @@ namespace DodgerollClamity
         public bool EnableDodgeroll { get; set; }
 
         // will always be fully invulnerable
-        
+
         // [Slider]
         // [DefaultValue(1f)]
         // public float InvulnerableRatio { get; set; }
@@ -42,7 +42,7 @@ namespace DodgerollClamity
         [Header("Stamina")]
 
         // will always be enabled
-        
+
         // [DefaultValue(true)]
         // public bool EnableStamina { get; set; }
 
@@ -51,12 +51,12 @@ namespace DodgerollClamity
         public float StaminaUsage { get; set; }
 
         [Slider]
-        [DefaultValue(0.5)]
+        [DefaultValue(0.4)]
         public float StaminaRegenRate { get; set; }
 
         [Slider]
         [Range(0f, 10f)]
-        [DefaultValue(1)]
+        [DefaultValue(1.3f)]
         public float StaminaCooldown { get; set; }
 
         [DefaultValue(DodgerollMeterPosition.TOP)]
@@ -65,5 +65,10 @@ namespace DodgerollClamity
         [Slider]
         [DefaultValue(15)]
         public int StaminaPositionOffset { get; set; }
+        
+        [Slider]
+        [Range(0, 100)]
+        [DefaultValue(50)]
+        public int StaminaBarOpacity { get; set; }
     }
 }

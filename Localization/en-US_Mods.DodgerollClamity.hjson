@@ -60,6 +60,16 @@ Configs: {
 			Label: Perfect Roll Trigger Hurt Effect
 			Tooltip: ""
 		}
+
+		BonusOnDodgeNonsense: {
+			Label: Bonus On Dodge Nonsense
+			Tooltip: ""
+		}
+
+		StaminaBarOpacity: {
+			Label: Stamina Bar Opacity
+			Tooltip: ""
+		}
 	}
 
 	DodgerollMeterPosition: {

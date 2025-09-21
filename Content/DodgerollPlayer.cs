@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using CalamityMod.Items.Accessories;
 using DodgerollClamity.Content.Buffs;
+using DodgerollClamity.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Terraria;
@@ -17,7 +18,7 @@ namespace DodgerollClamity.Content
         // Actual stats
         public short statDodgeTime;
         public float statDodgeBoost;
-        public short statDodgeRegen;
+        public float statDodgeRegen;
         public bool rollInstinct;
         public bool yharimsGift;
 
@@ -34,13 +35,13 @@ namespace DodgerollClamity.Content
 
         DodgerollState state = DodgerollState.NONE;
         Vector2 boost = Vector2.Zero;
-        int direction = 1;
-        int dodgerollTimer = 0;
+        public int direction = 1;
+        public int dodgerollTimer = 0;
         public int GetDodgeMax()
         {
             return statDodgeTime + DodgerollConfig.Instance.DodgerollLength;
         }
-        int staminaTimer = 0;
+        public int staminaTimer = 0;
         public int GetStaminaCD()
         {
             return (int)(DodgerollConfig.Instance.StaminaCooldown * 60);
@@ -66,7 +67,7 @@ namespace DodgerollClamity.Content
 
         public override bool FreeDodge(Player.HurtInfo info)
         {
-            if (!IsRolling() && Stamina == MaxStamina && !Player.CCed && info.Damage > 10)
+            if (!IsRolling() && rollInstinct && Stamina == MaxStamina && !Player.CCed && info.Damage > 10)
             {
                 CombatText.NewText(Player.Hitbox, Color.Red, "Instinct!", true);
                 InstinctDodged();
@@ -78,6 +79,7 @@ namespace DodgerollClamity.Content
                     modPacket.Write(Player.whoAmI);
                     modPacket.Send(-1, Main.myPlayer);
                 }
+                return true;
             }
             return base.FreeDodge(info);
         }
@@ -293,15 +295,20 @@ namespace DodgerollClamity.Content
 
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
-            bool isDodgerollAvailable =
-                DodgerollConfig.Instance.EnableDodgeroll &&
-                (DodgerollKey?.JustPressed ?? false) &&
-                state == DodgerollState.NONE &&
-                Stamina >= GetStaminaUsage() &&
-                !Player.mount.Active && !Player.CCed && !Player.dead;
+            // dont do dodgeroll
+            if (!DodgerollConfig.Instance.EnableDodgeroll || state != DodgerollState.NONE || Player.dead || Player.mount.Active || Player.CCed) return;
 
-            if (isDodgerollAvailable)
+            bool dodgeKeyPressed = DodgerollKey?.JustPressed ?? false;
+            bool haveStamina = Stamina >= GetStaminaUsage();
+
+            if (dodgeKeyPressed)
             {
+                if (!haveStamina)
+                {
+                    DodgerollMeterUISystem.NotEnoughStamina();
+                    return;
+                }
+
                 Main.NewText("Local client dodged");
 
                 var defaultDirection = new Vector2(Player.direction, 0);
@@ -426,6 +433,11 @@ namespace DodgerollClamity.Content
             {
                 // reset dodged
                 dodgedSomething = false;
+                if (Player.IsStandingStillForSpecialEffects)
+                {
+                    statDodgeRegen += 0.1f;// gain 10/s
+                }
+
                 Stamina = Math.Min(Stamina + (DodgerollConfig.Instance.StaminaRegenRate + statDodgeRegen) / 60, MaxStamina);
             }
         }
