@@ -38,7 +38,7 @@ namespace DodgerollClamity.Content.Accesory
         }
     }
 
-    public class MasterNinjaGear : GlobalItem
+    public class MasterNinjaGear1 : GlobalItem
     {
         public override bool AppliesToEntity(Item entity, bool lateInstantiation) => entity.type == ItemID.ClimbingClaws || entity.type == ItemID.ShoeSpikes;
         public override void UpdateAccessory(Item item, Player player, bool hideVisual)
@@ -50,18 +50,35 @@ namespace DodgerollClamity.Content.Accesory
         }
     }
 
-    public class EvilBossAcc : GlobalItem
+    public class MasterNinjaGear2 : GlobalItem
     {
-        public override bool AppliesToEntity(Item entity, bool lateInstantiation) => entity.type == ItemID.BrainOfConfusion || entity.type == ItemID.WormScarf;
+        public override bool AppliesToEntity(Item entity, bool lateInstantiation) => entity.type == ItemID.MasterNinjaGear;
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
-            tooltips.Add(new TooltipLine(Mod, "dodge", "Increase dodgeroll length"));
+            tooltips.Add(new TooltipLine(Mod, "dodge", "Increase dodgeroll boost by 90%\nReduce stamina usage by 10%"));
         }
         public override void UpdateAccessory(Item item, Player player, bool hideVisual)
         {
             if (player.TryGetModPlayer(out DodgerollPlayer pl))
             {
-                pl.statDodgeTime = 20;
+                pl.statDodgeBoost += 0.9f;
+                pl.statDodgeStaminaUsage -= 0.1f;
+            }
+        }
+    }
+
+    public class EvilBossAcc : GlobalItem
+    {
+        public override bool AppliesToEntity(Item entity, bool lateInstantiation) => entity.type == ItemID.BrainOfConfusion || entity.type == ItemID.WormScarf;
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            tooltips.Add(new TooltipLine(Mod, "dodge", "Slightly increase dodgeroll time"));
+        }
+        public override void UpdateAccessory(Item item, Player player, bool hideVisual)
+        {
+            if (player.TryGetModPlayer(out DodgerollPlayer pl))
+            {
+                pl.statDodgeTime += 4;
             }
         }
     }
@@ -99,7 +116,7 @@ namespace DodgerollClamity.Content.Accesory
         public override string ItemName => "StatisVoidSash";
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
-            tooltips.Add(new TooltipLine(Mod, "dodge", "Increase dodgeroll boost by 120%\nAutomatically dodge when below 50% health and full stamina"));
+            tooltips.Add(new TooltipLine(Mod, "dodge", "Increase dodgeroll boost by 120%\nAutomatically dodgeroll on fatal damage but consumes all of stamina"));
         }
 
         public override void UpdateAccessory(Item item, Player player, bool hideVisual)

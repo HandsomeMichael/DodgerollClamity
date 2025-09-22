@@ -27,7 +27,8 @@ namespace DodgerollClamity
 		internal enum MessageType : byte
 		{
 			FuckingDodge,
-			InstinctDodged
+			InstinctDodged,
+			Parry
 		}
 		
 		public override void HandlePacket(BinaryReader reader, int whoAmI)

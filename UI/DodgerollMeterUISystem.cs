@@ -4,6 +4,7 @@ using DodgerollClamity.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Graphics.Light;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
@@ -61,7 +62,7 @@ namespace DodgerollClamity.UI
 
         public byte shake;
         public byte fadingTimer;
-        public const byte fadingLength = 60;
+        public const byte fadingLength = 40;
         public float lastStamina;
                 
         public void DrawPlayerMeter(SpriteBatch spriteBatch)
@@ -105,12 +106,9 @@ namespace DodgerollClamity.UI
             var staminaCDRec = new Rectangle(0, 0, (int)(barTexture.Width * cdProgress), barTexture.Height);
             var orig = frameTexture.Size() / 2f;
 
-            var color = Color.White * opacity;
+            var lightColor = Lighting.GetColor((int)player.Bottom.X / 16, (int)player.Bottom.Y / 16);
+            var color =  lightColor * opacity;//new Color(defactoColor,defactoColor,defactoColor) * opacity;
 
-            // if (shake > 0)
-            // {
-            //     color = Color.Lerp(color, Color.Red, shake / shakeMax);
-            // }
 
             spriteBatch.Draw(frameBack, position, null, color, 0f, orig, 1f, SpriteEffects.None, 0f);
             if (opacity > 0f) spriteBatch.Draw(barNope, position, barNopeRec, color, 0f, orig, 1f, SpriteEffects.None, 0f);

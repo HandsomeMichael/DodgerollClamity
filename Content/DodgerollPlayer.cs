@@ -6,6 +6,7 @@ using DodgerollClamity.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameInput;
 using Terraria.ID;
@@ -19,6 +20,7 @@ namespace DodgerollClamity.Content
         public short statDodgeTime;
         public float statDodgeBoost;
         public float statDodgeRegen;
+        public float statDodgeStaminaUsage;
         public bool rollInstinct;
         public bool yharimsGift;
 
@@ -27,6 +29,7 @@ namespace DodgerollClamity.Content
             statDodgeRegen = 0;
             statDodgeBoost = 0;
             statDodgeTime = 0;
+            statDodgeStaminaUsage = 0f;
             rollInstinct = false;
             yharimsGift = false;
         }
@@ -64,10 +67,22 @@ namespace DodgerollClamity.Content
             DodgerollKey = KeybindLoader.RegisterKeybind(Mod, "Dodgeroll", Keys.LeftControl);    
         }
 
+        public override bool PreKill(double damage, int hitDirection, bool pvp, ref bool playSound, ref bool genDust, ref PlayerDeathReason damageSource)
+        {
+            if (IsRolling() && IsPerfectDodge() && damageSource.IsOther(DeathReasonOtherID.FallDamage))
+            {
+                CombatText.NewText(Player.Hitbox, Color.Gold, "Lucky...", true);
+                Player.statLife = 1;
+                playSound = false;
+                genDust = false;
+                return false;
+            }
+            return base.PreKill(damage, hitDirection, pvp, ref playSound, ref genDust, ref damageSource);
+        }
 
         public override bool FreeDodge(Player.HurtInfo info)
         {
-            if (!IsRolling() && rollInstinct && Stamina == MaxStamina && !Player.CCed && info.Damage > 10)
+            if (!IsRolling() && rollInstinct && Stamina == MaxStamina && (info.Damage > Player.statLife || Player.statLife <= 50) && !Player.CCed)
             {
                 CombatText.NewText(Player.Hitbox, Color.Red, "Instinct!", true);
                 InstinctDodged();
@@ -86,8 +101,8 @@ namespace DodgerollClamity.Content
 
         public override bool ImmuneTo(PlayerDeathReason damageSource, int cooldownCounter, bool dodgeable)
         {
-            // use ts so first frame can still immune to shit
-            if (dodgerollTimer > 0)
+            // dodge any undodgeeable stuff except fall damage
+            if (dodgerollTimer > 0 && !damageSource.IsOther(DeathReasonOtherID.FallDamage))
             {
                 // handles dodge bonus
                 if (!dodgedSomething && dodgeable)
@@ -95,6 +110,7 @@ namespace DodgerollClamity.Content
                     GiveDodgeBonus(damageSource);
                     dodgedSomething = true;
                 }
+                //Main.NewText("asd"+damageSource.SourceOtherIndex);
 
                 // would still immune to any damage including those annoying cactus damage from fargo god i hate that thing
                 return true;
@@ -110,6 +126,13 @@ namespace DodgerollClamity.Content
             Player.immune = true;
             Player.immuneTime = 60;
         }
+
+        public bool IsPerfectDodge()
+        {
+            int deltaDodge = GetDodgeMax() - dodgerollTimer;
+            return deltaDodge <= perfectDodgeThreeshold;
+        }
+        public const int perfectDodgeThreeshold = 5;
         public void GiveDodgeBonus(PlayerDeathReason source)
         {
             if (CalamityCalls.IsAdrenaline(Player))
@@ -119,8 +142,7 @@ namespace DodgerollClamity.Content
 
             // give 5% stamina back
             float staminaBonus = 0.05f;
-            int deltaDodge = GetDodgeMax() - dodgerollTimer;
-            bool perfectDodge = deltaDodge <= 5;
+            bool perfectDodge = IsPerfectDodge();
 
             if (perfectDodge)
             {
@@ -184,25 +206,25 @@ namespace DodgerollClamity.Content
             {
                 if (Player.HeldItem.DamageType.CountsAsClass(DamageClass.Melee))
                 {
-                    Player.AddBuff(ModContent.BuffType<BuffRaged>(), 80);
+                    Player.AddBuff(ModContent.BuffType<BuffRaged>(), perfectDodge ? 80 : 15);
                 }
                 else if (Player.HeldItem.DamageType.CountsAsClass(DamageClass.Ranged))
                 {
-                    Player.AddBuff(ModContent.BuffType<BuffHawked>(), 70);
+                    Player.AddBuff(ModContent.BuffType<BuffHawked>(), perfectDodge ? 70 : 15);
                 }
                 else if (Player.HeldItem.DamageType.CountsAsClass(DamageClass.Summon))
                 {
-                    Player.AddBuff(ModContent.BuffType<BuffFamilius>(), 90);
+                    Player.AddBuff(ModContent.BuffType<BuffFamilius>(), perfectDodge ? 90 : 30);
                 }
                 else if (Player.HeldItem.DamageType.CountsAsClass(DamageClass.Magic))
                 {
-                    Player.AddBuff(ModContent.BuffType<BuffMagical>(), 60);
+                    Player.AddBuff(ModContent.BuffType<BuffMagical>(), perfectDodge ? 60 : 20);
                 }
                 else if (CalamityCalls.IsRogueClass(Player.HeldItem.DamageType))
                 {
-                    // dodge grant from 50% - 90% stealth
-                    CalamityCalls.GiveRogueStealth(Player, perfectDodge ? 0.9f : 0.5f);
-                    Player.AddBuff(ModContent.BuffType<BuffStealthy>(), 50);
+                    // dodge grant from 25% or 90% stealth
+                    CalamityCalls.GiveRogueStealth(Player, perfectDodge ? 0.9f : 0.25f);
+                    Player.AddBuff(ModContent.BuffType<BuffStealthy>(), 60);
                 }
             }
 
@@ -305,11 +327,12 @@ namespace DodgerollClamity.Content
             {
                 if (!haveStamina)
                 {
+                    SoundEngine.PlaySound(new SoundStyle("DodgerollClamity/Sounds/NoRoll"), Player.Center);
                     DodgerollMeterUISystem.NotEnoughStamina();
                     return;
                 }
 
-                Main.NewText("Local client dodged");
+                // Main.NewText("Local client dodged");
 
                 var defaultDirection = new Vector2(Player.direction, 0);
                 var dodgeBoost = triggersSet.DirectionsRaw.SafeNormalize(defaultDirection) * DodgerollConfig.Instance.DodgerollBoost * (1f + statDodgeBoost);
@@ -320,7 +343,7 @@ namespace DodgerollClamity.Content
                 // sync, how ? i dont fucking know
                 if (Main.netMode == NetmodeID.MultiplayerClient)
                 {
-                    Main.NewText("Sync dodge data");
+                    // Main.NewText("Sync dodge data");
                     ModPacket modPacket = Mod.GetPacket();
                     modPacket.Write((byte)DodgerollClamity.MessageType.FuckingDodge);
                     modPacket.Write(Player.whoAmI);
@@ -343,6 +366,9 @@ namespace DodgerollClamity.Content
             direction = dodgeDirection;
             dodgerollTimer = GetDodgeMax();
             dodgedSomething = false;
+
+            SoundEngine.PlaySound(new SoundStyle("DodgerollClamity/Sounds/Roll"+Main.rand.Next(1,4)), Player.Center);
+            
             // didnt work ig
             // if (DodgerollConfig.Instance.CancelItemUseMidroll)
             // {
@@ -362,7 +388,7 @@ namespace DodgerollClamity.Content
                 return 0f;
             }
             
-            float staminaUsage = DodgerollConfig.Instance.StaminaUsage;
+            float staminaUsage = DodgerollConfig.Instance.StaminaUsage + statDodgeStaminaUsage;
             return Utils.Clamp(staminaUsage, 0f, 1f);
         }
         public bool ShouldUseStamina()
@@ -378,8 +404,24 @@ namespace DodgerollClamity.Content
         {
             var dodgeBoost = reader.ReadVector2();
             var dodgeDirection = reader.ReadInt32();
-            Main.NewText("Handling Dodge data");
+            // Main.NewText("Handling Dodge data");
             InitiateDodgeroll(dodgeBoost, dodgeDirection);
+        }
+
+        public override void PostUpdateMiscEffects()
+        {
+            // disable dashing upon rolling or out of stamina
+            if ((Stamina <= 0.1f || IsRolling()) && DodgerollConfig.Instance.DashRequireStamina)
+            {
+                Player.dashType = 0;
+            }
+
+            // reduce stamina
+            if (Player.dashType > 0 && Player.timeSinceLastDashStarted == 1)
+            {
+                // Stamina = Math.Max(0, Stamina - GetStaminaUsage() * 0.5f);
+                staminaTimer = GetStaminaCD();
+            }
         }
 
         public override void PreUpdate()
@@ -390,11 +432,35 @@ namespace DodgerollClamity.Content
             {
                 state = DodgerollState.ROLLING;
                 Player.RemoveAllGrapplingHooks();
-                Player.velocity += boost;
+
+                // better boost management
+                if (boost.X > 0)
+                {
+                    if (Player.velocity.X + boost.X < boost.X) { Player.velocity.X = boost.X; }
+                    else { Player.velocity.X += boost.X; }
+                }
+                else
+                {
+                    if (Player.velocity.X + boost.X > boost.X) { Player.velocity.X = boost.X; }
+                    else { Player.velocity.X += boost.X; }
+                }
+                Player.velocity.Y += boost.Y;
+
+                //Player.velocity += boost;
 
                 // half fall damage
                 int tilePositionY = (int)(Player.position.Y / 16f);
-                Player.fallStart = (int)MathHelper.Lerp(Player.fallStart, tilePositionY, 0.5f); 
+                Player.fallStart = (int)MathHelper.Lerp(Player.fallStart, tilePositionY, 0.5f);
+
+                for (int i = 0; i < Player.MaxBuffs; i++)
+                {
+                    int buffType = Player.buffType[i];
+                    //buffType.IsAny(BuffID.OnFire, BuffID.OnFire3, BuffID.CursedInferno)
+                    if (Player.buffTime[i] > 1 && Main.debuff[buffType] && !BuffID.Sets.NurseCannotRemoveDebuff[buffType])
+                    {
+                        Player.buffTime[i] = Math.Max(Player.buffTime[i] - 40, 1);
+                    }
+                }
             }
 
             if (state == DodgerollState.ROLLING && dodgerollTimer <= 0)
@@ -448,6 +514,7 @@ namespace DodgerollClamity.Content
             // roll effect
             if (state == DodgerollState.ROLLING)
             {
+                Player.armorEffectDrawShadow = true;
                 float progressMax = GetDodgeMax();
                 var progress = 1 - dodgerollTimer / progressMax;
 

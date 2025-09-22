@@ -39,6 +39,9 @@ namespace DodgerollClamity
         [DefaultValue(false)]
         public bool BonusOnDodgeNonsense { get; set; }
 
+        [DefaultValue(false)]
+        public bool DashRequireStamina { get; set; }
+
         [Header("Stamina")]
 
         // will always be enabled
