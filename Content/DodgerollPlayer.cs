@@ -9,11 +9,13 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameInput;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace DodgerollClamity.Content
 {
+    
     class DodgerollPlayer : ModPlayer
     {
         // Actual stats
@@ -23,6 +25,24 @@ namespace DodgerollClamity.Content
         public float statDodgeStaminaUsage;
         public bool rollInstinct;
         public bool yharimsGift;
+        public byte dodgeType;
+
+        // bonus stats
+
+        public enum BonusType
+        {
+            None,
+            Melee,
+            Ranged,
+            Summon,
+            Magic,
+            Rogue,
+            Healer,
+            Any,
+            AnyPerfect
+        }
+        public BonusType bonusType;
+        public short bonusTimer;
 
         public override void ResetEffects()
         {
@@ -32,6 +52,70 @@ namespace DodgerollClamity.Content
             statDodgeStaminaUsage = 0f;
             rollInstinct = false;
             yharimsGift = false;
+
+            
+            if (!Main.dedServ && bonusTimer > 0 && bonusType != BonusType.Any)
+            {
+                int num = 0;
+                num += Player.bodyFrame.Y / 56;
+                if (num >= Main.OffsetsPlayerHeadgear.Length) num = 0;
+
+                Vector2 vector = Main.OffsetsPlayerHeadgear[num];
+                vector *= Player.Directions;
+                Vector2 vector2 = new Vector2(Player.width / 2, Player.height / 2) + vector + (Player.MountedCenter - Player.Center);
+                Player.sitting.GetSittingOffsetInfo(Player, out var posOffset, out var seatAdjustment);
+                vector2 += posOffset + new Vector2(0f, seatAdjustment);
+                if (Player.face == 19) vector2.Y -= 5f * Player.gravDir;
+                if (Player.head == 276) vector2.X += 2.5f * (float)direction;
+
+                if (Player.mount.Active && Player.mount.Type == 52)
+                {
+                    vector2.X += 14f * (float)direction;
+                    vector2.Y -= 2f * Player.gravDir;
+                }
+
+                float y = -11.5f * Player.gravDir;
+                Vector2 vector3 = new Vector2(3 * direction - ((direction == 1) ? 1 : 0), y) + Vector2.UnitY * Player.gfxOffY + vector2;
+                Vector2 vector4 = new Vector2(3 * Player.shadowDirection[1] - ((direction == 1) ? 1 : 0), y) + vector2;
+                Vector2 vector5 = Vector2.Zero;
+                if (Player.mount.Active && Player.mount.Cart)
+                {
+                    int num2 = Math.Sign(Player.velocity.X);
+                    if (num2 == 0)
+                        num2 = direction;
+
+                    vector5 = new Vector2(MathHelper.Lerp(0f, -8f, Player.fullRotation / ((float)Math.PI / 4f)), MathHelper.Lerp(0f, 2f, Math.Abs(Player.fullRotation / ((float)Math.PI / 4f)))).RotatedBy(Player.fullRotation);
+                    if (num2 == Math.Sign(Player.fullRotation))
+                        vector5 *= MathHelper.Lerp(1f, 0.6f, Math.Abs(Player.fullRotation / ((float)Math.PI / 4f)));
+                }
+
+                if (Player.fullRotation != 0f)
+                {
+                    vector3 = vector3.RotatedBy(Player.fullRotation, Player.fullRotationOrigin);
+                    vector4 = vector4.RotatedBy(Player.fullRotation, Player.fullRotationOrigin);
+                }
+
+                float num3 = 0f;
+                Vector2 vector6 = Player.position + vector3 + vector5;
+                Vector2 vector7 = Player.oldPosition + vector4 + vector5;
+                vector7.Y -= num3 / 2f;
+                vector6.Y -= num3 / 2f;
+                float num4 = 0.5f;
+
+                int num5 = (int)Vector2.Distance(vector6, vector7) / 3 + 1;
+                if (Vector2.Distance(vector6, vector7) % 3f != 0f) num5++;
+
+                for (float num6 = 1f; num6 <= (float)num5; num6 += 1f)
+                {
+                    Dust obj = Main.dust[Dust.NewDust(Player.Center, 0, 0, DustID.TheDestroyer)];
+                    obj.position = Vector2.Lerp(vector7, vector6, num6 / (float)num5);
+                    obj.noGravity = true;
+                    obj.velocity = Vector2.Zero;
+                    obj.customData = this;
+                    obj.scale = num4;
+                    obj.shader = GameShaders.Armor.GetShaderFromItemId(DodgeEyeEffect());//GameShaders.Armor.GetSecondaryShader(Player.cYorai, Player);
+                }
+            }
         }
 
         // Dodgeroll states
@@ -47,7 +131,9 @@ namespace DodgerollClamity.Content
         public int staminaTimer = 0;
         public int GetStaminaCD()
         {
-            return (int)(DodgerollConfig.Instance.StaminaCooldown * 60);
+            int cd = (int)(DodgerollConfig.Instance.StaminaCooldown * 60);
+
+            return cd;
         }
         public bool dodgedSomething = false;
         public float Stamina { get; set; } = 1;
@@ -64,7 +150,7 @@ namespace DodgerollClamity.Content
 
         public override void Load()
         {
-            DodgerollKey = KeybindLoader.RegisterKeybind(Mod, "Dodgeroll", Keys.LeftControl);    
+            DodgerollKey = KeybindLoader.RegisterKeybind(Mod, "Dodgeroll", Keys.LeftControl);
         }
 
         public override bool PreKill(double damage, int hitDirection, bool pvp, ref bool playSound, ref bool genDust, ref PlayerDeathReason damageSource)
@@ -90,9 +176,8 @@ namespace DodgerollClamity.Content
                 if (Main.netMode == NetmodeID.MultiplayerClient)
                 {
                     ModPacket modPacket = Mod.GetPacket();
-                    modPacket.Write((byte)DodgerollClamity.MessageType.FuckingDodge);
-                    modPacket.Write(Player.whoAmI);
-                    modPacket.Send(-1, Main.myPlayer);
+                    modPacket.Write((byte)DodgerollClamity.MessageType.InstinctDodgedServer);
+                    modPacket.Send();
                 }
                 return true;
             }
@@ -196,36 +281,54 @@ namespace DodgerollClamity.Content
                 {
                     CombatText.NewText(Player.Hitbox, Color.Gold, "Perfect!", true);
                 }
+
+                if (Player.HeldItem != null && !Player.HeldItem.IsAir && Player.HeldItem.damage > 0)
+                {
+                    if (Player.HeldItem.DamageType.CountsAsClass(DamageClass.Melee))
+                    {
+                        bonusType = BonusType.Melee;
+                        bonusTimer = 60 * 4;
+                    }
+                    else if (Player.HeldItem.DamageType.CountsAsClass(DamageClass.Ranged))
+                    {
+                        bonusType = BonusType.Ranged;
+                        bonusTimer = 60 * 4;
+                    }
+                    else if (Player.HeldItem.DamageType.CountsAsClass(DamageClass.Summon))
+                    {
+                        bonusType = BonusType.Summon;
+                        bonusTimer = 60 * 8;
+                    }
+                    else if (Player.HeldItem.DamageType.CountsAsClass(DamageClass.Magic))
+                    {
+                        bonusType = BonusType.Magic;
+                        bonusTimer = 60 * 8;
+                    }
+                    else if (CalamityCalls.IsRogueClass(Player.HeldItem.DamageType))
+                    {
+                        CalamityCalls.GiveRogueStealth(Player, 0.9f);
+                        bonusType = BonusType.Rogue;
+                        bonusTimer = 60 * 3;
+                    }
+                    else
+                    {
+                        bonusType = BonusType.AnyPerfect;
+                        bonusTimer = 60 * 5;
+                    }
+                }
             }
             else
             {
+                if (Player.HeldItem != null && !Player.HeldItem.IsAir && Player.HeldItem.damage > 0 && CalamityCalls.IsRogueClass(Player.HeldItem.DamageType))
+                {
+                    CalamityCalls.GiveRogueStealth(Player, 0.25f);
+                }
+                else
+                {
+                    bonusType = BonusType.Any;
+                    bonusTimer = 60 * 3; // 3 second of 5% more damage
+                }
                 CombatText.NewText(Player.Hitbox, Color.LightYellow, "Dodged", true);
-            }
-
-            if (Player.HeldItem != null && !Player.HeldItem.IsAir && Player.HeldItem.damage > 0)
-            {
-                if (Player.HeldItem.DamageType.CountsAsClass(DamageClass.Melee))
-                {
-                    Player.AddBuff(ModContent.BuffType<BuffRaged>(), perfectDodge ? 80 : 15);
-                }
-                else if (Player.HeldItem.DamageType.CountsAsClass(DamageClass.Ranged))
-                {
-                    Player.AddBuff(ModContent.BuffType<BuffHawked>(), perfectDodge ? 70 : 15);
-                }
-                else if (Player.HeldItem.DamageType.CountsAsClass(DamageClass.Summon))
-                {
-                    Player.AddBuff(ModContent.BuffType<BuffFamilius>(), perfectDodge ? 90 : 30);
-                }
-                else if (Player.HeldItem.DamageType.CountsAsClass(DamageClass.Magic))
-                {
-                    Player.AddBuff(ModContent.BuffType<BuffMagical>(), perfectDodge ? 60 : 20);
-                }
-                else if (CalamityCalls.IsRogueClass(Player.HeldItem.DamageType))
-                {
-                    // dodge grant from 25% or 90% stealth
-                    CalamityCalls.GiveRogueStealth(Player, perfectDodge ? 0.9f : 0.25f);
-                    Player.AddBuff(ModContent.BuffType<BuffStealthy>(), 60);
-                }
             }
 
             // give 5% more if its a projectile
@@ -236,7 +339,7 @@ namespace DodgerollClamity.Content
 
             Stamina = Math.Min(Stamina + staminaBonus, MaxStamina);
         }
-        
+
         /// <summary>
         /// Do nerfed honey comb
         /// </summary>
@@ -262,7 +365,7 @@ namespace DodgerollClamity.Content
 
             Player.AddBuff(48, 300);
         }
-        
+
         /// <summary>
         /// Do nerfed star cloak
         /// </summary>
@@ -340,23 +443,21 @@ namespace DodgerollClamity.Content
 
                 InitiateDodgeroll(dodgeBoost, dodgeDirection);
 
-                // sync, how ? i dont fucking know
+                // send this to the server lil bro
                 if (Main.netMode == NetmodeID.MultiplayerClient)
                 {
-                    // Main.NewText("Sync dodge data");
                     ModPacket modPacket = Mod.GetPacket();
-                    modPacket.Write((byte)DodgerollClamity.MessageType.FuckingDodge);
-                    modPacket.Write(Player.whoAmI);
+                    modPacket.Write((byte)DodgerollClamity.MessageType.FuckingDodgeServer);
                     modPacket.WriteVector2(dodgeBoost);
                     modPacket.Write(dodgeDirection);
-                    modPacket.Send(-1, Main.myPlayer);
+                    modPacket.Send();
                 }
             }
         }
 
         public void InitiateDodgeroll(Vector2 dodgeBoost, int dodgeDirection)
         {
-            // Main.NewText("Dodgeroll initiated");
+            Main.NewText("Dodgeroll initiated for "+Player.name);
             state = DodgerollState.STARTED;
 
             var staminaCost = GetStaminaUsage();
@@ -367,8 +468,8 @@ namespace DodgerollClamity.Content
             dodgerollTimer = GetDodgeMax();
             dodgedSomething = false;
 
-            SoundEngine.PlaySound(new SoundStyle("DodgerollClamity/Sounds/Roll"+Main.rand.Next(1,4)), Player.Center);
-            
+            SoundEngine.PlaySound(new SoundStyle("DodgerollClamity/Sounds/Roll" + Main.rand.Next(1, 4)).WithVolumeScale(0.5f).WithPitchOffset(Main.rand.NextFloat(0.9f,1.1f)), Player.Center);
+
             // didnt work ig
             // if (DodgerollConfig.Instance.CancelItemUseMidroll)
             // {
@@ -387,7 +488,7 @@ namespace DodgerollClamity.Content
             {
                 return 0f;
             }
-            
+
             float staminaUsage = DodgerollConfig.Instance.StaminaUsage + statDodgeStaminaUsage;
             return Utils.Clamp(staminaUsage, 0f, 1f);
         }
@@ -400,16 +501,34 @@ namespace DodgerollClamity.Content
             return true;
         }
 
-        public void HandleFuckingDodge(BinaryReader reader, int whoAmI)
+        // public void HandleFuckingDodge(BinaryReader reader, int whoAmI)
+        // {
+        //     Vector2 dodgeBoost = reader.ReadVector2();
+        //     int dodgeDirection = reader.ReadInt32();
+        //     // Main.NewText("Handling Dodge data");
+        //     InitiateDodgeroll(dodgeBoost, dodgeDirection);
+        // }
+
+        public int DodgeEyeEffect()
         {
-            var dodgeBoost = reader.ReadVector2();
-            var dodgeDirection = reader.ReadInt32();
-            // Main.NewText("Handling Dodge data");
-            InitiateDodgeroll(dodgeBoost, dodgeDirection);
+            switch (bonusType)
+            {
+                case BonusType.Melee:return ItemID.RedDye;
+                case BonusType.Ranged:return ItemID.OrangeDye;
+                case BonusType.Magic:return ItemID.BlueDye;
+                case BonusType.Summon:return ItemID.GreenDye;
+                case BonusType.Healer:return ItemID.LimeDye;
+                case BonusType.Rogue:return ItemID.PurpleDye;
+                case BonusType.AnyPerfect: return ItemID.TealDye;
+                default: return ItemID.YellowDye;
+            }
         }
 
         public override void PostUpdateMiscEffects()
         {
+            // disable any of these mechanic when player is adrenalined
+            if (CalamityCalls.IsAdrenaline(Player)) return;
+
             // disable dashing upon rolling or out of stamina
             if ((Stamina <= 0.1f || IsRolling()) && DodgerollConfig.Instance.DashRequireStamina)
             {
@@ -485,15 +604,48 @@ namespace DodgerollClamity.Content
 
         public override void ModifyItemScale(Item item, ref float scale)
         {
-            if (Player.HasBuff(ModContent.BuffType<BuffRaged>()))
+            if (bonusTimer > 0 && bonusType == BonusType.Melee)
             {
-                scale += 0.25f;
+                scale += 1.25f;
             }
         }
 
         public override void PostUpdateEquips()
         {
-
+            // apply buffs
+            if (bonusTimer > 0)
+            {
+                switch (bonusType)
+                {
+                    case BonusType.Melee:
+                        Player.GetDamage(DamageClass.Melee) += 0.2f;
+                        break;
+                    case BonusType.Ranged:
+                        Player.GetDamage(DamageClass.Ranged) += 0.05f;
+                        Player.GetAttackSpeed(DamageClass.Ranged) += 0.2f;
+                        break;
+                    case BonusType.Magic:
+                        Player.GetDamage(DamageClass.Magic) += 0.1f;
+                        Player.manaRegenBonus += 10;
+                        break;
+                    case BonusType.Summon:
+                        Player.GetDamage(DamageClass.Summon) += 0.05f;
+                        Player.statDefense += Main.hardMode ? 10 : 5;
+                        Player.moveSpeed += 0.3f;
+                        break;
+                    case BonusType.Rogue:
+                        Player.GetDamage(DamageClass.Throwing) += 0.05f;
+                        break;
+                    case BonusType.Any:
+                        statDodgeBoost += 0.20f;
+                        break;
+                    case BonusType.AnyPerfect:
+                        Player.GetDamage(DamageClass.Generic) += 0.1f;
+                        break;
+                    default: break;
+                }
+                bonusTimer--;
+            }
             // regen stamina
             if (state == DodgerollState.NONE && staminaTimer <= 0 && Stamina < MaxStamina)
             {

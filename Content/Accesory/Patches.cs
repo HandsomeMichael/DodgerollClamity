@@ -40,12 +40,36 @@ namespace DodgerollClamity.Content.Accesory
 
     public class MasterNinjaGear1 : GlobalItem
     {
-        public override bool AppliesToEntity(Item entity, bool lateInstantiation) => entity.type == ItemID.ClimbingClaws || entity.type == ItemID.ShoeSpikes;
+        public override bool AppliesToEntity(Item entity, bool lateInstantiation) => entity.type == ItemID.AnkhShield || entity.type == ItemID.Tabi|| entity.type == ItemID.ClimbingClaws || entity.type == ItemID.ShoeSpikes;
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            tooltips.Add(new TooltipLine(Mod, "dodge", "Increase dodgeroll boost by 30%"));
+        }
         public override void UpdateAccessory(Item item, Player player, bool hideVisual)
         {
             if (player.TryGetModPlayer(out DodgerollPlayer pl))
             {
                 pl.statDodgeBoost += 0.3f;
+            }
+        }
+    }
+
+    public class AnkhShieldNoClam : GlobalItem
+    {
+        public override bool IsLoadingEnabled(Mod mod)
+        {
+            return !ModLoader.HasMod("CalamityMod");
+        }
+        public override bool AppliesToEntity(Item entity, bool lateInstantiation) => entity.type == ItemID.AnkhShield;
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            tooltips.Add(new TooltipLine(Mod, "dodge", "Automatically dodgeroll on fatal damage but consumes all of stamina"));
+        }
+        public override void UpdateAccessory(Item item, Player player, bool hideVisual)
+        {
+            if (player.TryGetModPlayer(out DodgerollPlayer pl))
+            {
+                pl.rollInstinct = true;
             }
         }
     }
