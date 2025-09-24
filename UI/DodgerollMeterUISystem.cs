@@ -90,8 +90,21 @@ namespace DodgerollClamity.UI
                 cdProgress = (float)dodgeroll.staminaTimer / (float)dodgeroll.GetStaminaCD();
             }
 
-            var position = player.Bottom - Main.screenPosition;
-            position.Y += DodgerollConfig.Instance.StaminaPositionOffset;
+            DodgerollMeterPosition posType = DodgerollConfig.Instance.StaminaPosition;
+
+            Vector2 position;
+            switch (posType)
+            {
+                case DodgerollMeterPosition.TOP:position = player.Top - new Vector2(0,DodgerollConfig.Instance.StaminaPositionOffset);break;
+                case DodgerollMeterPosition.BOTTOM:position = player.Bottom + new Vector2(0,DodgerollConfig.Instance.StaminaPositionOffset);break;
+                case DodgerollMeterPosition.LEFT:position = player.Left - new Vector2(DodgerollConfig.Instance.StaminaPositionOffset,0);break;
+                case DodgerollMeterPosition.RIGHT:position = player.Right + new Vector2(DodgerollConfig.Instance.StaminaPositionOffset,0);break;
+                default:
+                    position = player.Bottom + new Vector2(0,DodgerollConfig.Instance.StaminaPositionOffset);
+                    break;
+            }
+            position -= Main.screenPosition;
+            //position.Y += DodgerollConfig.Instance.StaminaPositionOffset;
             position += new Vector2(Main.rand.Next(-shake, shake), Main.rand.Next(-shake, shake)) / 2f;
             position /= Main.UIScale;
             if (shake > 0) shake--;
@@ -101,6 +114,7 @@ namespace DodgerollClamity.UI
             var frameTexture = ModContent.Request<Texture2D>("DodgerollClamity/UI/StaminaFrame").Value;
             var frameBack = ModContent.Request<Texture2D>("DodgerollClamity/UI/StaminaFrame_Back").Value;
             var staminaCD = ModContent.Request<Texture2D>("DodgerollClamity/UI/StaminaCD").Value;
+
             var barRec = new Rectangle(0, 0, (int)(barTexture.Width * progress), barTexture.Height);
             var barNopeRec = new Rectangle(0, 0, (int)(barTexture.Width * lastStamina), barTexture.Height);
             var staminaCDRec = new Rectangle(0, 0, (int)(barTexture.Width * cdProgress), barTexture.Height);
@@ -108,14 +122,22 @@ namespace DodgerollClamity.UI
 
             var lightColor = Lighting.GetColor((int)player.Bottom.X / 16, (int)player.Bottom.Y / 16);
             var color =  lightColor * opacity;//new Color(defactoColor,defactoColor,defactoColor) * opacity;
+            float rotation = 0f;
+            SpriteEffects effect = SpriteEffects.None;
+
+            if (posType == DodgerollMeterPosition.LEFT || posType == DodgerollMeterPosition.RIGHT)
+            {
+                rotation = MathHelper.ToRadians(90);
+                effect = SpriteEffects.FlipHorizontally;
+            }
 
 
-            spriteBatch.Draw(frameBack, position, null, color, 0f, orig, 1f, SpriteEffects.None, 0f);
-            if (opacity > 0f) spriteBatch.Draw(barNope, position, barNopeRec, color, 0f, orig, 1f, SpriteEffects.None, 0f);
-            spriteBatch.Draw(barTexture, position, barRec, color, 0f, orig, 1f, SpriteEffects.None, 0f);
-            spriteBatch.Draw(frameTexture, position, null, color, 0f, orig, 1f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(frameBack, position, null, color, rotation, orig, 1f, effect, 0f);
+            if (opacity > 0f) spriteBatch.Draw(barNope, position, barNopeRec, color, rotation, orig, 1f, effect, 0f);
+            spriteBatch.Draw(barTexture, position, barRec, color, rotation, orig, 1f, effect, 0f);
+            spriteBatch.Draw(frameTexture, position, null, color, rotation, orig, 1f, effect, 0f);
 
-            spriteBatch.Draw(staminaCD, position, staminaCDRec, color, 0f, orig, 1f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(staminaCD, position, staminaCDRec, color, rotation, orig, 1f, effect, 0f);
 
         }
     }

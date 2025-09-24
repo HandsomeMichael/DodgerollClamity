@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using CalamityMod;
 using CalamityMod.Items.Accessories;
 using DodgerollClamity.Content.Buffs;
 using DodgerollClamity.UI;
@@ -15,7 +16,7 @@ using Terraria.ModLoader;
 
 namespace DodgerollClamity.Content
 {
-    
+
     class DodgerollPlayer : ModPlayer
     {
         // Actual stats
@@ -26,6 +27,7 @@ namespace DodgerollClamity.Content
         public bool rollInstinct;
         public bool yharimsGift;
         public byte dodgeType;
+        public float statDodgeCD;
 
         // bonus stats
 
@@ -46,6 +48,7 @@ namespace DodgerollClamity.Content
 
         public override void ResetEffects()
         {
+            statDodgeCD = 0f;
             statDodgeRegen = 0;
             statDodgeBoost = 0;
             statDodgeTime = 0;
@@ -53,7 +56,7 @@ namespace DodgerollClamity.Content
             rollInstinct = false;
             yharimsGift = false;
 
-            
+
             if (!Main.dedServ && bonusTimer > 0 && bonusType != BonusType.Any)
             {
                 int num = 0;
@@ -100,7 +103,7 @@ namespace DodgerollClamity.Content
                 Vector2 vector7 = Player.oldPosition + vector4 + vector5;
                 vector7.Y -= num3 / 2f;
                 vector6.Y -= num3 / 2f;
-                float num4 = 0.5f;
+                float num4 = 0.3f;
 
                 int num5 = (int)Vector2.Distance(vector6, vector7) / 3 + 1;
                 if (Vector2.Distance(vector6, vector7) % 3f != 0f) num5++;
@@ -108,6 +111,8 @@ namespace DodgerollClamity.Content
                 for (float num6 = 1f; num6 <= (float)num5; num6 += 1f)
                 {
                     Dust obj = Main.dust[Dust.NewDust(Player.Center, 0, 0, DustID.TheDestroyer)];
+                    // a
+                    obj.rotation = Player.velocity.ToRotation();
                     obj.position = Vector2.Lerp(vector7, vector6, num6 / (float)num5);
                     obj.noGravity = true;
                     obj.velocity = Vector2.Zero;
@@ -132,10 +137,11 @@ namespace DodgerollClamity.Content
         public int GetStaminaCD()
         {
             int cd = (int)(DodgerollConfig.Instance.StaminaCooldown * 60);
-
-            return cd;
+            return cd - (int)((float)cd * statDodgeCD);
         }
         public bool dodgedSomething = false;
+
+
         public float Stamina { get; set; } = 1;
         public float MaxStamina { get; } = 1;
 
@@ -316,6 +322,11 @@ namespace DodgerollClamity.Content
                         bonusTimer = 60 * 5;
                     }
                 }
+
+                if (DodgerollClamity.Get.calamity != null)
+                {
+                    UpdateCalamityRoverDrive();
+                }
             }
             else
             {
@@ -414,7 +425,6 @@ namespace DodgerollClamity.Content
             {
                 return state == DodgerollState.NONE || state == DodgerollState.FINISHED;
             }
-
             return base.CanUseItem(item);
         }
 
@@ -457,7 +467,7 @@ namespace DodgerollClamity.Content
 
         public void InitiateDodgeroll(Vector2 dodgeBoost, int dodgeDirection)
         {
-            Main.NewText("Dodgeroll initiated for "+Player.name);
+            //Main.NewText("Dodgeroll initiated for "+Player.name);
             state = DodgerollState.STARTED;
 
             var staminaCost = GetStaminaUsage();
@@ -468,7 +478,8 @@ namespace DodgerollClamity.Content
             dodgerollTimer = GetDodgeMax();
             dodgedSomething = false;
 
-            SoundEngine.PlaySound(new SoundStyle("DodgerollClamity/Sounds/Roll" + Main.rand.Next(1, 4)).WithVolumeScale(0.5f).WithPitchOffset(Main.rand.NextFloat(0.9f,1.1f)), Player.Center);
+            if (!Main.dedServ)
+                SoundEngine.PlaySound(new SoundStyle("DodgerollClamity/Sounds/Roll" + Main.rand.Next(1, 4)).WithVolumeScale(0.5f).WithPitchOffset(Main.rand.NextFloat(0.9f, 1.1f)), Player.Center);
 
             // didnt work ig
             // if (DodgerollConfig.Instance.CancelItemUseMidroll)
@@ -513,12 +524,12 @@ namespace DodgerollClamity.Content
         {
             switch (bonusType)
             {
-                case BonusType.Melee:return ItemID.RedDye;
-                case BonusType.Ranged:return ItemID.OrangeDye;
-                case BonusType.Magic:return ItemID.BlueDye;
-                case BonusType.Summon:return ItemID.GreenDye;
-                case BonusType.Healer:return ItemID.LimeDye;
-                case BonusType.Rogue:return ItemID.PurpleDye;
+                case BonusType.Melee: return ItemID.RedDye;
+                case BonusType.Ranged: return ItemID.OrangeDye;
+                case BonusType.Magic: return ItemID.BlueDye;
+                case BonusType.Summon: return ItemID.GreenDye;
+                case BonusType.Healer: return ItemID.LimeDye;
+                case BonusType.Rogue: return ItemID.PurpleDye;
                 case BonusType.AnyPerfect: return ItemID.TealDye;
                 default: return ItemID.YellowDye;
             }
@@ -577,7 +588,14 @@ namespace DodgerollClamity.Content
                     //buffType.IsAny(BuffID.OnFire, BuffID.OnFire3, BuffID.CursedInferno)
                     if (Player.buffTime[i] > 1 && Main.debuff[buffType] && !BuffID.Sets.NurseCannotRemoveDebuff[buffType])
                     {
-                        Player.buffTime[i] = Math.Max(Player.buffTime[i] - 40, 1);
+                        if (DodgerollClamity.Get.calamity != null)
+                        {
+                            AbsorberEffect(i);
+                        }
+                        else
+                        {
+                            Player.buffTime[i] = Math.Max(Player.buffTime[i] - 50, 1);
+                        }
                     }
                 }
             }
@@ -606,7 +624,7 @@ namespace DodgerollClamity.Content
         {
             if (bonusTimer > 0 && bonusType == BonusType.Melee)
             {
-                scale += 1.25f;
+                scale += 0.3f;
             }
         }
 
@@ -644,6 +662,12 @@ namespace DodgerollClamity.Content
                         break;
                     default: break;
                 }
+
+                if (DodgerollClamity.Get.calamity != null)
+                {
+                    UpdateCalamityBuff();
+                }
+
                 bonusTimer--;
             }
             // regen stamina
@@ -675,5 +699,52 @@ namespace DodgerollClamity.Content
                 Player.fullRotation = direction * MathHelper.Lerp(0, MathHelper.TwoPi, progress);
             }
         }
+
+        #region Calamity Methods
+        [JITWhenModsEnabled("CalamityMod")]
+        public void UpdateCalamityBuff()
+        {
+            var playerClam = Player.Calamity();
+            if (playerClam.dodgeScarf)
+            {
+                Player.GetDamage(DamageClass.Generic) += 0.1f;
+            }
+
+            if (playerClam.evasionScarf)
+            {
+                Player.GetDamage(DamageClass.Generic) += 0.15f;
+            }
+
+            if (playerClam.warbannerOfTheSun)
+            {
+                Player.GetAttackSpeed(DamageClass.Melee) += 0.5f;
+            }
+
+            if (playerClam.spiritOrigin)
+            {
+                Player.GetAttackSpeed(DamageClass.Ranged) += 0.5f;
+            }
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        public void AbsorberEffect(int i)
+        {
+            if (Player.Calamity().absorber && IsPerfectDodge())
+            {
+                Player.buffTime[i] = Math.Max(Player.buffTime[i] - 60 * 5, 1);
+            }
+            else
+            {
+                Player.buffTime[i] = Math.Max(Player.buffTime[i] - 50, 1);
+            }
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        public void UpdateCalamityRoverDrive()
+        {
+            // but jesse what if calamity doesnt cap the shield durabili I DONT CARE FUCK YOU
+            Player.Calamity().RoverDriveShieldDurability += 5;
+        }
+        #endregion
     }
 }
