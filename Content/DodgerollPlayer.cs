@@ -777,7 +777,7 @@ namespace DodgerollClamity.Content
         public bool CalamityExhausted(Player player)
         {
             var oldDuke = player.GetModPlayer<OldDukeScalesPlayer>();
-            return oldDuke.IsTired;
+            return !oldDuke.IsTired;
         }
 
         [JITWhenModsEnabled("CalamityMod")]

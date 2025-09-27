@@ -22,7 +22,12 @@ namespace DodgerollClamity
 			{
 				Logger.Warn("The humble ram usage imploder is not enabled");
 			}
-        }
+
+			if (ModLoader.TryGetMod("Dodgeroll", out _))
+			{
+				throw new Exception("Dodgeroll mod is present, which is not allowed.");
+			}
+		}
 
 		// current only does dodge, later i would problaby add parry , cancel dodge, cancel dash, cancel item use , throw weapon 
 		internal enum MessageType : byte

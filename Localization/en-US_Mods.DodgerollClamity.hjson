@@ -1,0 +1,139 @@
+Keybinds.Dodgeroll.DisplayName: Dodgeroll
+
+Buffs: {
+	BuffPrecise: {
+		DisplayName: Buff Precise
+		Description: Increased critical chance by 50%
+	}
+}
+
+Projectiles.Slash.DisplayName: Slash
+
+Configs: {
+	DodgerollConfig: {
+		DisplayName: Dodgeroll Config
+
+		EnableDodgeroll: {
+			Label: Enable Dodgeroll
+			Tooltip: 
+            '''
+            Enable player to actually dodgeroll
+            '''
+		}
+
+		DodgerollLength: {
+			Label: Dodgeroll Length
+			Tooltip: 
+            '''
+            How long the dodgeroll would be
+            '''
+		}
+
+		DodgerollBoost: {
+			Label: Dodgeroll Boost
+			Tooltip: 
+            '''
+            How far the dodgeroll would be
+            '''
+		}
+
+		EnableItemUseMidroll: {
+			Label: Enable Item Use Midroll
+			Tooltip: 
+            '''
+            Enable item to be used mid dodgerolling
+            '''
+		}
+
+		CancelItemUseMidroll: {
+			Label: Cancel Item Use Midroll
+			Tooltip: 
+            '''
+            Cancel item animation when dodgerolling
+            Might not work properly due to different item behaviour
+            '''
+		}
+
+		PerfectRollTriggerHurtEffect: {
+			Label: Perfect Roll Trigger Modded Hurt Effect
+			Tooltip: 
+            '''
+            Perfect roll will trigger modded hurt effect 
+            '''
+		}
+
+		BonusOnDodgeNonsense: {
+			Label: Bonus On Dodge Nonsense
+			Tooltip: 
+            '''
+            Allow bonus to player when succesfully dodged something
+            '''
+		}
+
+		DashRequireStamina: {
+			Label: Dash Require Stamina
+			Tooltip: 
+            '''
+            Dash require stamina for balance
+            '''
+		}
+
+		Headers.Stamina: Stamina Header
+
+		StaminaUsage: {
+			Label: Stamina Usage
+			Tooltip: 
+            '''
+            The % usage of stamina per dodgeroll
+            '''
+		}
+
+		StaminaRegenRate: {
+			Label: Stamina Regen Rate
+			Tooltip: 
+            '''
+            The % stamina gain per second 
+            '''
+		}
+
+		StaminaCooldown: {
+			Label: Stamina Cooldown
+			Tooltip: 
+            '''
+            The cooldown rate for stamina regen
+            '''
+		}
+
+		StaminaPosition: {
+			Label: Stamina Position
+			Tooltip: 
+            '''
+            The stamina meter ui position
+            '''
+		}
+
+		StaminaPositionOffset: {
+			Label: Stamina Position Offset
+			Tooltip: 
+            '''
+            The stamina offset meter ui position
+            '''
+		}
+
+		StaminaBarOpacity: {
+			Label: Stamina Bar Opacity
+			Tooltip: 
+            '''
+            The transparency of stamina meter ui
+            '''
+		}
+	}
+
+	DodgerollMeterPosition: {
+		Tooltip: "the position of meter relative to player"
+		TOP.Label: TOP
+		BOTTOM.Label: BOTTOM
+		LEFT.Label: LEFT
+		RIGHT.Label: RIGHT
+	}
+}

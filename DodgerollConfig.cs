@@ -71,7 +71,7 @@ namespace DodgerollClamity
         
         [Slider]
         [Range(0, 100)]
-        [DefaultValue(50)]
+        [DefaultValue(85)]
         public int StaminaBarOpacity { get; set; }
     }
 }
