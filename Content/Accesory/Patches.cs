@@ -219,6 +219,179 @@ namespace DodgerollClamity.Content.Accesory
         }
     }
 
+    public class SandCloak : ModItemPatch
+    {
+        public override string ItemName => "SandCloak";
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            tooltips.Add(new TooltipLine(Mod, "dodge", "Succesfull dodge grant increased movement speed"));
+        }
+    }
+
+    public class StressPills : ModItemPatch
+    {
+        public override string ItemName => "StressPills";
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            tooltips.Add(new TooltipLine(Mod, "dodge", "Adrenaline mode boost dodgeroll by 50%"));
+        }
+    }
+
+    // coin
+    public class CoinofDeceit : ModItemPatch
+    {
+        public override string ItemName => "CoinofDeceit";
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            tooltips.Add(new TooltipLine(Mod, "dodge", "Reduce stamina usage by 4%"));
+        }
+    }
+
+    public class Abaddon : ModItemPatch
+    {
+        public override string ItemName => "Abaddon";
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            tooltips.Add(new TooltipLine(Mod, "dodge", " Grant short immunity to brimflames on [c/F6AE2A:perfect] dodgeroll"));
+        }
+    }
+
+    public class AmidiasPendant : ModItemPatch
+    {
+        public override string ItemName => "AmidiasPendant";
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            tooltips.Add(new TooltipLine(Mod, "dodge", "Small chance to inflict confused on [c/F6AE2A:perfect] dodgeroll"));
+        }
+        public override void UpdateAccessory(Item item, Player player, bool hideVisual)
+        {
+            if (player.TryGetModPlayer(out DodgerollPlayer dd))
+            {
+                dd.amidiasPendant = true;
+            }
+        }
+    }
+
+    public class TheTransformer : ModItemPatch
+    {
+        public override string ItemName => "TheTransformer";
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            tooltips.Add(new TooltipLine(Mod, "dodge", "Inflict electrified to nearby enemies on [c/F6AE2A:perfect] dodgeroll"));
+        }
+    }
+
+    public class OldDie : ModItemPatch
+    {
+        public override string ItemName => "OldDie";
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            tooltips.Add(new TooltipLine(Mod, "dodge", "Small chance to grant [c/F6AE2A:perfect] dodgeroll on any roll"));
+        }
+    }
+
+    public class OldDukeScales : ModItemPatch
+    {
+        public override string ItemName => "OldDukeScales";
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            tooltips.Add(new TooltipLine(Mod, "dodge", "Also increase dodgeroll boost by 150%\nCant dodgeroll if you are 'exhausted'"));
+        }
+    }
+
+    //Craw Carapace 	Craw Carapace
+
+    public class CrawCarapace : ModItemPatch
+    {
+        public override string ItemName => "CrawCarapace";
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            tooltips.Add(new TooltipLine(Mod, "dodge", "Inflict crumbling to the nearest enemy on [c/F6AE2A:perfect] dodgeroll"));
+        }
+    }
+
+    public class ElysianAegis : ModItemPatch
+    {
+        public override string ItemName => "ElysianAegis";
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            tooltips.Add(new TooltipLine(Mod, "dodge", "Inflict profaned flames to the nearest enemy on [c/F6AE2A:perfect] dodgeroll"));
+        }
+    }
+
+    public class FleshTotem : ModItemPatch
+    {
+        public override string ItemName => "FleshTotem";
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            tooltips.Add(new TooltipLine(Mod, "dodge", "Take back 50% used stamina on [c/F6AE2A:perfect] dodgeroll"));
+        }
+        public override void UpdateAccessory(Item item, Player player, bool hideVisual)
+        {
+            if (player.TryGetModPlayer(out DodgerollPlayer pl))
+            {
+                pl.takeBackStamina25 = true;
+            }
+        }
+    }
+
+    public class SilencingSheath : ModItemPatch
+    {
+        public override string ItemName => "SilencingSheath";
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            tooltips.Add(new TooltipLine(Mod, "dodge", "Release slash on succesfull dodge\nRoll slash does not stack"));
+        }
+        public override void UpdateAccessory(Item item, Player player, bool hideVisual)
+        {
+            if (player.TryGetModPlayer(out DodgerollPlayer pl))
+            {
+                pl.dodgeAttackType = 1;
+            }
+        }
+    }
+
+    public class DarkMatterSheath : ModItemPatch
+    {
+        public override string ItemName => "DarkMatterSheath";
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            tooltips.Add(new TooltipLine(Mod, "dodge", "Release powerfull slash on succesfull dodge\nRoll slash does not stack"));
+        }
+        public override void UpdateAccessory(Item item, Player player, bool hideVisual)
+        {
+            if (player.TryGetModPlayer(out DodgerollPlayer pl))
+            {
+                pl.dodgeAttackType = 2;
+            }
+        }
+    }
+
+    public class EclipseMirror : ModItemPatch
+    {
+        public override string ItemName => "EclipseMirror";
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            tooltips.Add(new TooltipLine(Mod, "dodge", "Release powerfull slash to nearby enemies on succesfull dodge\nRoll slash does not stack"));
+        }
+        public override void UpdateAccessory(Item item, Player player, bool hideVisual)
+        {
+            if (player.TryGetModPlayer(out DodgerollPlayer pl))
+            {
+                pl.dodgeAttackType = 3;
+            }
+        }
+    }
+
+    public class VampiricTalisman : ModItemPatch
+    {
+        public override string ItemName => "VampiricTalisman";
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            tooltips.Add(new TooltipLine(Mod, "dodge", "Give 1% health on [c/F6AE2A:perfect] dodge\nFailed to get perfect grant 5s of bleeding"));
+        }
+    }
+
     public class AsgardsValor : ModItemPatch
     {
         public override string ItemName => "AsgardsValor";
@@ -234,7 +407,7 @@ namespace DodgerollClamity.Content.Accesory
                 pl.statDodgeCD += 0.2f;
             }
         }
-    }
+    }   
 
     public class DeepDiver : ModItemPatch
     {
@@ -337,7 +510,7 @@ namespace DodgerollClamity.Content.Accesory
         public override string ItemName => "RoverDrive";
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
-            tooltips.Add(new TooltipLine(Mod, "dodge", "[c/F6AE2A:Perfect] dodgeroll brings back 5 durability"));
+            tooltips.Add(new TooltipLine(Mod, "dodge", "[c/F6AE2A:Perfect] dodgeroll brings back 5 shield"));
         }
     }
 

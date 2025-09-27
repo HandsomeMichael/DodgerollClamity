@@ -1,8 +1,10 @@
 using System;
 using System.IO;
 using CalamityMod;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Accessories;
 using DodgerollClamity.Content.Buffs;
+using DodgerollClamity.Content.Projectiles;
 using DodgerollClamity.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -28,6 +30,11 @@ namespace DodgerollClamity.Content
         public bool yharimsGift;
         public byte dodgeType;
         public float statDodgeCD;
+        public bool amidiasPendant;
+        public bool boostPerfect;
+        public bool takeBackStamina25;
+
+        public byte dodgeAttackType;
 
         // bonus stats
 
@@ -48,13 +55,17 @@ namespace DodgerollClamity.Content
 
         public override void ResetEffects()
         {
-            statDodgeCD = 0f;
+            //statDodgeCD = 0f;
             statDodgeRegen = 0;
             statDodgeBoost = 0;
             statDodgeTime = 0;
             statDodgeStaminaUsage = 0f;
             rollInstinct = false;
             yharimsGift = false;
+            amidiasPendant = false;
+            boostPerfect = false;
+            takeBackStamina25 = false;
+            dodgeAttackType = 0;
 
 
             if (!Main.dedServ && bonusTimer > 0 && bonusType != BonusType.Any)
@@ -103,7 +114,7 @@ namespace DodgerollClamity.Content
                 Vector2 vector7 = Player.oldPosition + vector4 + vector5;
                 vector7.Y -= num3 / 2f;
                 vector6.Y -= num3 / 2f;
-                float num4 = 0.3f;
+                float num4 = 0.5f;
 
                 int num5 = (int)Vector2.Distance(vector6, vector7) / 3 + 1;
                 if (Vector2.Distance(vector6, vector7) % 3f != 0f) num5++;
@@ -112,7 +123,7 @@ namespace DodgerollClamity.Content
                 {
                     Dust obj = Main.dust[Dust.NewDust(Player.Center, 0, 0, DustID.TheDestroyer)];
                     // a
-                    obj.rotation = Player.velocity.ToRotation();
+                    //obj.rotation = Player.velocity.ToRotation();
                     obj.position = Vector2.Lerp(vector7, vector6, num6 / (float)num5);
                     obj.noGravity = true;
                     obj.velocity = Vector2.Zero;
@@ -137,6 +148,11 @@ namespace DodgerollClamity.Content
         public int GetStaminaCD()
         {
             int cd = (int)(DodgerollConfig.Instance.StaminaCooldown * 60);
+            // directly reduce cooldown
+            if (CalamityCalls.IsRaged(Player))
+            {
+                statDodgeCD += 0.5f;
+            }
             return cd - (int)((float)cd * statDodgeCD);
         }
         public bool dodgedSomething = false;
@@ -220,6 +236,11 @@ namespace DodgerollClamity.Content
 
         public bool IsPerfectDodge()
         {
+            // grant perfect regardless
+            if (boostPerfect && Main.rand.NextBool(100))
+            {
+                return true;
+            }
             int deltaDodge = GetDodgeMax() - dodgerollTimer;
             return deltaDodge <= perfectDodgeThreeshold;
         }
@@ -288,45 +309,45 @@ namespace DodgerollClamity.Content
                     CombatText.NewText(Player.Hitbox, Color.Gold, "Perfect!", true);
                 }
 
-                if (Player.HeldItem != null && !Player.HeldItem.IsAir && Player.HeldItem.damage > 0)
+                if (takeBackStamina25)
                 {
-                    if (Player.HeldItem.DamageType.CountsAsClass(DamageClass.Melee))
-                    {
-                        bonusType = BonusType.Melee;
-                        bonusTimer = 60 * 4;
-                    }
-                    else if (Player.HeldItem.DamageType.CountsAsClass(DamageClass.Ranged))
-                    {
-                        bonusType = BonusType.Ranged;
-                        bonusTimer = 60 * 4;
-                    }
-                    else if (Player.HeldItem.DamageType.CountsAsClass(DamageClass.Summon))
-                    {
-                        bonusType = BonusType.Summon;
-                        bonusTimer = 60 * 8;
-                    }
-                    else if (Player.HeldItem.DamageType.CountsAsClass(DamageClass.Magic))
-                    {
-                        bonusType = BonusType.Magic;
-                        bonusTimer = 60 * 8;
-                    }
-                    else if (CalamityCalls.IsRogueClass(Player.HeldItem.DamageType))
-                    {
-                        CalamityCalls.GiveRogueStealth(Player, 0.9f);
-                        bonusType = BonusType.Rogue;
-                        bonusTimer = 60 * 3;
-                    }
-                    else
-                    {
-                        bonusType = BonusType.AnyPerfect;
-                        bonusTimer = 60 * 5;
-                    }
+                    staminaBonus += GetStaminaUsage() * 0.5f;
                 }
 
-                if (DodgerollClamity.Get.calamity != null)
-                {
-                    UpdateCalamityRoverDrive();
-                }
+                if (Player.HeldItem != null && !Player.HeldItem.IsAir && Player.HeldItem.damage > 0)
+                    {
+                        if (Player.HeldItem.DamageType.CountsAsClass(DamageClass.Melee))
+                        {
+                            bonusType = BonusType.Melee;
+                            bonusTimer = 60 * 4;
+                        }
+                        else if (Player.HeldItem.DamageType.CountsAsClass(DamageClass.Ranged))
+                        {
+                            bonusType = BonusType.Ranged;
+                            bonusTimer = 60 * 4;
+                        }
+                        else if (Player.HeldItem.DamageType.CountsAsClass(DamageClass.Summon))
+                        {
+                            bonusType = BonusType.Summon;
+                            bonusTimer = 60 * 8;
+                        }
+                        else if (Player.HeldItem.DamageType.CountsAsClass(DamageClass.Magic))
+                        {
+                            bonusType = BonusType.Magic;
+                            bonusTimer = 60 * 8;
+                        }
+                        else if (CalamityCalls.IsRogueClass(Player.HeldItem.DamageType))
+                        {
+                            CalamityCalls.GiveRogueStealth(Player, 0.9f);
+                            bonusType = BonusType.Rogue;
+                            bonusTimer = 60 * 3;
+                        }
+                        else
+                        {
+                            bonusType = BonusType.AnyPerfect;
+                            bonusTimer = 60 * 5;
+                        }
+                    }
             }
             else
             {
@@ -342,6 +363,10 @@ namespace DodgerollClamity.Content
                 CombatText.NewText(Player.Hitbox, Color.LightYellow, "Dodged", true);
             }
 
+            if (DodgerollClamity.Get.calamity != null)
+            {
+                CalamityOnBonus(perfectDodge);
+            }
             // give 5% more if its a projectile
             if (source.SourceProjectileType > 0)
             {
@@ -438,7 +463,7 @@ namespace DodgerollClamity.Content
 
             if (dodgeKeyPressed)
             {
-                if (!haveStamina)
+                if (!haveStamina || !DodgerollAvailable())
                 {
                     SoundEngine.PlaySound(new SoundStyle("DodgerollClamity/Sounds/NoRoll"), Player.Center);
                     DodgerollMeterUISystem.NotEnoughStamina();
@@ -463,6 +488,15 @@ namespace DodgerollClamity.Content
                     modPacket.Send();
                 }
             }
+        }
+
+        public bool DodgerollAvailable()
+        {
+            if (DodgerollClamity.Get.calamity != null)
+            {
+                return CalamityExhausted(Player);
+            }
+            return true;
         }
 
         public void InitiateDodgeroll(Vector2 dodgeBoost, int dodgeDirection)
@@ -501,14 +535,20 @@ namespace DodgerollClamity.Content
             }
 
             float staminaUsage = DodgerollConfig.Instance.StaminaUsage + statDodgeStaminaUsage;
+
+            if (CalamityCalls.IsAdrenaline(Player))
+            {
+                staminaUsage *= 0.5f; // halfs stamina usage
+            }
+
             return Utils.Clamp(staminaUsage, 0f, 1f);
         }
         public bool ShouldUseStamina()
         {
-            if (CalamityCalls.IsAdrenaline(Player))
-            {
-                return false;
-            }
+            // if (CalamityCalls.IsAdrenaline(Player))
+            // {
+            //     return false;
+            // }
             return true;
         }
 
@@ -618,6 +658,8 @@ namespace DodgerollClamity.Content
             if (dodgerollTimer > 0) dodgerollTimer--;
             if (staminaTimer > 0) staminaTimer--;
 
+            statDodgeCD = 0;
+
         }
 
         public override void ModifyItemScale(Item item, ref float scale)
@@ -630,9 +672,13 @@ namespace DodgerollClamity.Content
 
         public override void PostUpdateEquips()
         {
+            // apply duke scale thingy
+            CalamityEquipBonus(Player);
+            
             // apply buffs
             if (bonusTimer > 0)
             {
+                bool perfect = true;
                 switch (bonusType)
                 {
                     case BonusType.Melee:
@@ -654,18 +700,24 @@ namespace DodgerollClamity.Content
                     case BonusType.Rogue:
                         Player.GetDamage(DamageClass.Throwing) += 0.05f;
                         break;
-                    case BonusType.Any:
-                        statDodgeBoost += 0.20f;
-                        break;
                     case BonusType.AnyPerfect:
                         Player.GetDamage(DamageClass.Generic) += 0.1f;
                         break;
-                    default: break;
+                    // Any is not Perfect
+                    case BonusType.Any:
+                        statDodgeBoost += 0.20f;
+                        perfect = false;
+                        break;
+                    default:
+                        perfect = false;
+                        break;
                 }
+
+                statDodgeCD += 0.4f; // faster stamina cooldown
 
                 if (DodgerollClamity.Get.calamity != null)
                 {
-                    UpdateCalamityBuff();
+                    UpdateCalamityBuff(perfect);
                 }
 
                 bonusTimer--;
@@ -700,9 +752,56 @@ namespace DodgerollClamity.Content
             }
         }
 
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (DodgerollClamity.Get.calamity != null)
+            {
+                UpdateCalamityOnHit(target, hit, damageDone);
+            }
+        }
+
+
         #region Calamity Methods
+
         [JITWhenModsEnabled("CalamityMod")]
-        public void UpdateCalamityBuff()
+        public void CalamityEquipBonus(Player player)
+        {
+            var scale = player.GetModPlayer<OldDukeScalesPlayer>();
+            if (scale.OldDukeScalesOn)
+            {
+                statDodgeBoost += 1.5f;
+            }
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        public bool CalamityExhausted(Player player)
+        {
+            var oldDuke = player.GetModPlayer<OldDukeScalesPlayer>();
+            return oldDuke.IsTired;
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        public void UpdateCalamityOnHit(NPC target, NPC.HitInfo info, int damage)
+        {
+            var playerClam = Player.Calamity();
+            if (bonusTimer > 0 && bonusType != BonusType.Any || bonusType != BonusType.None)
+            {
+                if (amidiasPendant)
+                {
+                    if (damage > 6)
+                    {
+                        if (Main.rand.NextBool(10)) target.AddBuff(BuffID.Confused, 60);
+                    }
+                    // harder for rapid low damage stuff
+                    else
+                    {
+                        if (Main.rand.NextBool(20)) target.AddBuff(BuffID.Confused, 60);
+                    }
+                }
+            }
+        }
+        [JITWhenModsEnabled("CalamityMod")]
+        public void UpdateCalamityBuff(bool perfect)
         {
             var playerClam = Player.Calamity();
             if (playerClam.dodgeScarf)
@@ -724,6 +823,32 @@ namespace DodgerollClamity.Content
             {
                 Player.GetAttackSpeed(DamageClass.Ranged) += 0.5f;
             }
+
+            if (playerClam.sandCloak)
+            {
+                Player.desertBoots = true;
+                if (perfect)
+                {
+                    Player.moveSpeed += 0.1f;
+                }
+            }
+
+            if (playerClam.stressPills && playerClam.adrenalineModeActive)
+            {
+                statDodgeBoost += 0.2f;
+                statDodgeStaminaUsage -= 0.1f;
+            }
+
+            //CoinofDeceit
+            if (playerClam.stealthStrike85Cost)
+            {
+                statDodgeStaminaUsage -= 0.04f;
+            }
+
+            if (playerClam.abaddon && perfect)
+            {
+                Player.buffImmune[ModContent.BuffType<BrimstoneFlames>()] = true;
+            }
         }
 
         [JITWhenModsEnabled("CalamityMod")]
@@ -740,10 +865,61 @@ namespace DodgerollClamity.Content
         }
 
         [JITWhenModsEnabled("CalamityMod")]
-        public void UpdateCalamityRoverDrive()
+        public void CalamityOnBonus(bool perfect)
         {
-            // but jesse what if calamity doesnt cap the shield durabili I DONT CARE FUCK YOU
-            Player.Calamity().RoverDriveShieldDurability += 5;
+            var playerClam = Player.Calamity();
+
+            if (perfect)
+            {
+                if (playerClam.roverDrive) playerClam.RoverDriveShieldDurability += 5;
+                if (playerClam.transformer)
+                {
+                    for (int i = 0; i < Main.maxNPCs; i++)
+                    {
+                        var npc = Main.npc[i];
+                        if (npc.CanBeChasedBy(Player) && npc.DistanceSQ(Player.Center) < 1000)
+                        {
+                            npc.AddBuff(BuffID.Electrified, 60);
+                            // to do : electric zap dust effect
+                        }
+                    }
+                }
+
+                // heal 1%
+                if (playerClam.vampiricTalisman)
+                {
+                    Player.Heal((int)((float)Player.statLifeMax2 * 0.01f));
+                }
+            }
+            else
+            {
+                if (playerClam.vampiricTalisman)
+                {
+                    Player.AddBuff(BuffID.Bleeding, 60 * 5);
+                }
+            }
+
+            // to do 
+            switch (dodgeAttackType)
+            {
+                case 1:
+                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<Slash>(), 10, 1f, Player.whoAmI);
+                    break;
+                case 2:
+                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<Slash>(), 100, 1f, Player.whoAmI,1);
+                    break;
+                case 3:
+                    for (int i = 0; i < Main.maxNPCs; i++)
+                    {
+                        var npc = Main.npc[i];
+                        if (npc.CanBeChasedBy(Player) && npc.DistanceSQ(Player.Center) < 900)
+                        {
+                            Projectile.NewProjectile(Player.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<Slash>(), 100, 1f, Player.whoAmI,2);
+                        }
+                    }
+                    break;
+                default: break;
+            }
         }
         #endregion
     }

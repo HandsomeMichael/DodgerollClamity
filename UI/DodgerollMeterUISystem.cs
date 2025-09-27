@@ -128,7 +128,7 @@ namespace DodgerollClamity.UI
             if (posType == DodgerollMeterPosition.LEFT || posType == DodgerollMeterPosition.RIGHT)
             {
                 rotation = MathHelper.ToRadians(90);
-                effect = SpriteEffects.FlipHorizontally;
+                //effect = SpriteEffects.FlipHorizontally;
             }
 
 

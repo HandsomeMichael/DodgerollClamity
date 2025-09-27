@@ -10,6 +10,20 @@ namespace DodgerollClamity
 {
     public static class CalamityCalls
     {
+        public static bool IsRaged(Player player)
+        {
+            if (DodgerollClamity.Get.calamity != null)
+            {
+                return IsRaged_Inner(player);
+            }
+            return false;
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        public static bool IsRaged_Inner(Player player)
+        {
+            return player.Calamity().rageModeActive;
+        }
         public static bool IsRogueClass(DamageClass damage)
         {
             if (DodgerollClamity.Get.calamity != null)
@@ -47,6 +61,11 @@ namespace DodgerollClamity
         private static bool IsAdrenaline_Inner(Player player)
         {
             return player.Calamity().adrenalineModeActive;
+        }
+
+        internal static bool RageMode(Player player)
+        {
+            throw new NotImplementedException();
         }
 
         // [JITWhenModsEnabled("CalamityMod")]

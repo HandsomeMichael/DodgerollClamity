@@ -8,17 +8,20 @@ You can use the mod without calamity, althought some feature is disabled.
 
 Changes :
 
-- Dodging grant bonuses depending on held weapon and timing
+- Dodging grant bonuses depending on held weapon and timing ( perfect dodge )
 - Some accesories grant more dodging bonuses or dodging capability
-- Some higher being attacks will be undodgeable / require accesories
 - Adrenaline & Rage grant stat increase on dodgeroll
-- Rolling depletes most fire based debuff faster
-- Rolling halfs fall damage, perfect roll will leave you to atleat 1hp
+- Rolling depletes most curable debuff faster
+- Rolling halfs fall damage, perfect roll prevent death from fall damage
 - Now should work with multiplayer
 - Dodge sound effects ig
 - Removed some configs
 
 Credits:
  
+
 Original mod (MIT Licensed) : https://github.com/JonasueDaze/Dodgeroll
 Mod was influenced by TerrariaOverhaul and DodgeMod, while trying to do my own takes on the dodgeroll implementation.
+
+
+...Like antennas to heaven.
